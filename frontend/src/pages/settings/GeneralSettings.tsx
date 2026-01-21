@@ -184,6 +184,17 @@ export function GeneralSettings() {
     setDirty(false);
   };
 
+  const handleBrowseWorkspaceDir = async () => {
+    const result = await FolderPickerDialog.show({
+      value: draft?.workspace_dir ?? '',
+      title: t('settings.general.git.workspaceDir.dialogTitle'),
+      description: t('settings.general.git.workspaceDir.dialogDescription'),
+    });
+    if (result) {
+      updateDraft({ workspace_dir: result });
+    }
+  };
+
   const resetDisclaimer = async () => {
     if (!config) return;
     updateAndSaveConfig({ disclaimer_acknowledged: false });
@@ -686,6 +697,36 @@ export function GeneralSettings() {
                   </code>
                 </>
               )}
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="workspace-dir">
+              {t('settings.general.git.workspaceDir.label')}
+            </Label>
+            <div className="flex space-x-2">
+              <Input
+                id="workspace-dir"
+                type="text"
+                placeholder={t('settings.general.git.workspaceDir.placeholder')}
+                value={draft?.workspace_dir ?? ''}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  updateDraft({ workspace_dir: value || null });
+                }}
+                className="flex-1"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleBrowseWorkspaceDir}
+              >
+                <FolderOpen className="h-4 w-4 mr-2" />
+                {t('settings.general.git.workspaceDir.browse')}
+              </Button>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {t('settings.general.git.workspaceDir.helper')}
             </p>
           </div>
         </CardContent>
