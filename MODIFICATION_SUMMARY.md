@@ -28,6 +28,23 @@ const languageOptions = getLanguageOptions(
 ```
 **验证**：使用 `GetDiagnostics` 工具检查，确认修复后无语法错误
 
+### 2. 同步上游仓库更新
+**操作**：从原始仓库 `BloopAI/vibe-kanban` 合并最新更新到本地仓库
+**步骤**：
+1. 验证远程仓库配置：`git remote -v`
+2. 获取上游仓库更新：`git fetch upstream`
+3. 切换到 main 分支：`git checkout main`
+4. 合并上游更新：`git merge upstream/main`
+5. 推送更新到远程仓库：`git push origin main`
+**合并的主要更新**：
+- 修复：取消排队消息时保留 WYSIWYG 内容
+- 功能：改进预览浏览器显示时间和 URL 输入
+- 修复：排队后续消息后清除聊天框内容
+- 功能：GitHub 评论导航和 ChangesPanelContainer 中的复制到审查
+- 功能：添加终止所有运行进程时的详细日志
+- 版本：更新到 v0.0.159
+**验证**：确认本地 main 分支已与上游 main 分支完全同步
+
 ## 相关代码分析
 
 ### `getLanguageOptions` 函数
