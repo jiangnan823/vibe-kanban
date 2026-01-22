@@ -85,3 +85,8 @@ dev_assets
 vibe-kanban-cloud/
 
 .jj
+
+# Local development files
+.claude/
+nul
+start-backend.bat
