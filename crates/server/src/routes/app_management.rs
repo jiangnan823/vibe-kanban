@@ -6,10 +6,10 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
-use utils::api::ApiResponse;
+use utils::response::ApiResponse;
 use utils::desktop::{self, DesktopError};
 
-use crate::DeploymentImpl;
+use crate::{DeploymentImpl, shutdown};
 
 pub fn router() -> Router<DeploymentImpl> {
     Router::new()
@@ -38,15 +38,13 @@ pub struct DesktopShortcutResponse {
 /// Exit the application
 async fn exit_app(State(_deployment): State<DeploymentImpl>) -> Response {
     // Trigger graceful shutdown via global flag
-    crate::main::request_shutdown();
+    shutdown::request_shutdown();
 
     // Return success response immediately
     // The actual shutdown will happen in the background
     (
         [(axum::http::header::CONTENT_TYPE, "application/json")],
-        Json(ApiResponse::<()>::success_with_message(
-            "Application is shutting down...",
-        )),
+        Json(ApiResponse::<(), ()>::success(())),
     )
         .into_response()
 }
@@ -70,7 +68,7 @@ async fn create_desktop_shortcut(
 
             (
                 [(axum::http::header::CONTENT_TYPE, "application/json")],
-                Json(ApiResponse::success(DesktopShortcutResponse {
+                Json(ApiResponse::<DesktopShortcutResponse, ()>::success(DesktopShortcutResponse {
                     success: true,
                     message,
                     path: Some(path.to_string_lossy().to_string()),
@@ -96,7 +94,7 @@ async fn create_desktop_shortcut(
 
             (
                 [(axum::http::header::CONTENT_TYPE, "application/json")],
-                Json(ApiResponse::<DesktopShortcutResponse>::error(&error_message)),
+                Json(ApiResponse::<DesktopShortcutResponse, ()>::error(&error_message)),
             )
                 .into_response()
         }
@@ -111,7 +109,7 @@ async fn desktop_shortcut_exists(
 
     (
         [(axum::http::header::CONTENT_TYPE, "application/json")],
-        Json(ApiResponse::success(DesktopShortcutResponse {
+        Json(ApiResponse::<DesktopShortcutResponse, ()>::success(DesktopShortcutResponse {
             success: true,
             message: if exists {
                 "Desktop shortcut exists".to_string()

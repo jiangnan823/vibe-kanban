@@ -1,6 +1,6 @@
 use anyhow::{self, Error as AnyhowError};
 use deployment::{Deployment, DeploymentError};
-use server::{DeploymentImpl, routes};
+use server::{DeploymentImpl, routes, shutdown};
 use services::services::container::ContainerService;
 use sqlx::Error as SqlxError;
 use strip_ansi_escapes::strip;
@@ -12,10 +12,6 @@ use utils::{
     port_file::write_port_file,
     sentry::{self as sentry_utils, SentrySource, sentry_layer},
 };
-use std::sync::atomic::{AtomicBool, Ordering};
-
-// Global shutdown flag that can be triggered by API
-static SHUTDOWN_REQUESTED: AtomicBool = AtomicBool::new(false);
 
 #[derive(Debug, Error)]
 pub enum VibeKanbanError {
@@ -128,7 +124,7 @@ async fn main() -> Result<(), VibeKanbanError> {
     }
 
     axum::serve(listener, app_router)
-        .with_graceful_shutdown(shutdown_signal())
+        .with_graceful_shutdown(shutdown::shutdown_signal())
         .await?;
 
     perform_cleanup_actions(&deployment).await;
@@ -136,51 +132,7 @@ async fn main() -> Result<(), VibeKanbanError> {
     Ok(())
 }
 
-/// Request a graceful shutdown from API
-pub fn request_shutdown() {
-    SHUTDOWN_REQUESTED.store(true, Ordering::SeqCst);
-    tracing::info!("Shutdown requested via API");
-}
 
-pub async fn shutdown_signal() {
-    // Check for API-triggered shutdown first
-    tokio::select! {
-        _ = async {
-            loop {
-                if SHUTDOWN_REQUESTED.load(Ordering::SeqCst) {
-                    tracing::info!("API shutdown signal received");
-                    break;
-                }
-                tokio::time::sleep(std::time::Duration::from_millis(100)).await;
-            }
-        } => {},
-        _ = tokio::signal::ctrl_c() => {
-            tracing::info!("Ctrl+C received");
-        }
-    }
-
-    #[cfg(unix)]
-    {
-        use tokio::signal::unix::{SignalKind, signal};
-
-        // Try to install SIGTERM handler, but don't panic if it fails
-        let terminate = async {
-            if let Ok(mut sigterm) = signal(SignalKind::terminate()) {
-                sigterm.recv().await;
-            } else {
-                tracing::error!("Failed to install SIGTERM handler");
-                // Fallback: never resolves
-                std::future::pending::<()>().await;
-            }
-        };
-
-        tokio::select! {
-            _ = terminate => {
-                tracing::info!("SIGTERM received");
-            }
-        }
-    }
-}
 
 pub async fn perform_cleanup_actions(deployment: &DeploymentImpl) {
     deployment

@@ -1495,6 +1495,15 @@ dependencies = [
 
 [[package]]
 name = "directories"
+version = "5.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9a49173b84e034382284f27f1af4dcbbd231ffa358c0fe316541a7337f376a35"
+dependencies = [
+ "dirs-sys 0.4.1",
+]
+
+[[package]]
+name = "directories"
 version = "6.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "16f5094c54661b38d03bd7e50df373292118db60b585c08a411c6d840017fe7d"
@@ -1798,7 +1807,7 @@ dependencies = [
  "command-group",
  "convert_case 0.6.0",
  "derivative",
- "directories",
+ "directories 6.0.0",
  "dirs 5.0.1",
  "enum_dispatch",
  "eventsource-stream",
@@ -4855,6 +4864,7 @@ dependencies = [
  "chrono",
  "db",
  "deployment",
+ "directories 5.0.1",
  "dotenv",
  "executors",
  "futures-util",
@@ -6075,7 +6085,7 @@ dependencies = [
  "axum",
  "bytes",
  "chrono",
- "directories",
+ "directories 6.0.0",
  "dirs 5.0.1",
  "futures",
  "futures-util",

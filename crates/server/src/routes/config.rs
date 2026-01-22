@@ -580,14 +580,14 @@ async fn set_custom_path(
     // Ensure config directory exists
     if let Some(parent) = config_file.parent() {
         std::fs::create_dir_all(parent)
-            .map_err(|e| ApiError::Internal(format!("Failed to create config directory: {}", e)))?;
+            .map_err(|e| ApiError::Io(e))?;
     }
 
     let config_json = serde_json::to_string_pretty(&config)
-        .map_err(|e| ApiError::Internal(format!("Failed to serialize config: {}", e)))?;
+        .map_err(|e| ApiError::BadRequest(format!("Failed to serialize config: {}", e)))?;
 
     std::fs::write(&config_file, config_json)
-        .map_err(|e| ApiError::Internal(format!("Failed to write config: {}", e)))?;
+        .map_err(|e| ApiError::Io(e))?;
 
     Ok(ResponseJson(ApiResponse::success(SetCustomPathResponse {
         message: "Custom path saved. Restart the application to apply changes.".to_string(),
@@ -604,7 +604,7 @@ async fn reset_custom_path(
 
     if config_file.exists() {
         std::fs::remove_file(&config_file)
-            .map_err(|e| ApiError::Internal(format!("Failed to remove config: {}", e)))?;
+            .map_err(|e| ApiError::Io(e))?;
     }
 
     Ok(ResponseJson(ApiResponse::success(
