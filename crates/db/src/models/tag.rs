@@ -49,6 +49,18 @@ impl Tag {
         .await
     }
 
+    pub async fn find_by_tag_name(pool: &SqlitePool, tag_name: &str) -> Result<Option<Self>, sqlx::Error> {
+        sqlx::query_as!(
+            Tag,
+            r#"SELECT id as "id!: Uuid", tag_name, content as "content!", created_at as "created_at!: DateTime<Utc>", updated_at as "updated_at!: DateTime<Utc>"
+               FROM tags
+               WHERE tag_name = $1"#,
+            tag_name
+        )
+        .fetch_optional(pool)
+        .await
+    }
+
     pub async fn create(pool: &SqlitePool, data: &CreateTag) -> Result<Self, sqlx::Error> {
         let id = Uuid::new_v4();
         sqlx::query_as!(

@@ -5,3 +5,5 @@ export { ReposSettings } from './ReposSettings';
 export { OrganizationSettings } from './OrganizationSettings';
 export { AgentSettings } from './AgentSettings';
 export { McpSettings } from './McpSettings';
+export { DataManagement } from './DataManagement';
+// export { FirstRunWizard } from './FirstRunWizard';

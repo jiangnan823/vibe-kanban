@@ -80,7 +80,7 @@ export default defineConfig({
     port: parseInt(process.env.FRONTEND_PORT || "3000"),
     proxy: {
       "/api": {
-        target: "http://localhost:3134",
+        target: process.env.BACKEND_URL || "http://localhost:42541",
         changeOrigin: true,
         ws: true,
       }

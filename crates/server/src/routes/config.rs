@@ -45,6 +45,7 @@ pub fn router() -> Router<DeploymentImpl> {
         // Data storage path configuration endpoints
         .route("/path-config", get(get_path_config))
         .route("/path-config/custom", put(set_custom_path))
+        .route("/path-config/session", put(set_session_path))
         .route("/path-config/reset", put(reset_custom_path))
 }
 
@@ -483,12 +484,19 @@ pub struct PathConfigInfo {
     pub custom_path: Option<String>,
     pub default_path: String,
     pub is_custom: bool,
+    pub session_save_dir: Option<String>,
 }
 
 /// Request to set a custom path
 #[derive(Debug, Deserialize, TS)]
 pub struct SetCustomPathRequest {
     pub custom_path: String,
+}
+
+/// Request to set session save directory
+#[derive(Debug, Deserialize, TS)]
+pub struct SetSessionPathRequest {
+    pub session_save_dir: String,
 }
 
 /// Response when setting a custom path
@@ -533,6 +541,9 @@ async fn get_path_config(
 
     let is_custom = custom_config.custom_asset_dir.is_some();
 
+    // Get session save directory
+    let session_save_dir = utils::assets::session_save_dir();
+
     ResponseJson(ApiResponse::success(PathConfigInfo {
         current_path: current_path.to_string_lossy().to_string(),
         custom_path: custom_config
@@ -541,6 +552,7 @@ async fn get_path_config(
             .map(|p| p.to_string_lossy().to_string()),
         default_path: default_path.to_string_lossy().to_string(),
         is_custom,
+        session_save_dir: Some(session_save_dir.to_string_lossy().to_string()),
     }))
 }
 
@@ -573,9 +585,8 @@ async fn set_custom_path(
 
     // Save configuration
     let config_file = custom_path_config_file();
-    let config = CustomPathConfig {
-        custom_asset_dir: Some(custom_path.clone()),
-    };
+    let mut config = load_custom_path_config();
+    config.custom_asset_dir = Some(custom_path.clone());
 
     // Ensure config directory exists
     if let Some(parent) = config_file.parent() {
@@ -593,6 +604,56 @@ async fn set_custom_path(
         message: "Custom path saved. Restart the application to apply changes.".to_string(),
         requires_restart: true,
         credentials_warning: old_credentials && !new_credentials,
+    })))
+}
+
+/// Set session save directory
+async fn set_session_path(
+    State(_deployment): State<DeploymentImpl>,
+    Json(req): Json<SetSessionPathRequest>,
+) -> Result<ResponseJson<ApiResponse<SetCustomPathResponse>>, ApiError> {
+    let session_path = std::path::PathBuf::from(&req.session_save_dir);
+
+    // Validate path exists or can be created
+    if !session_path.exists() {
+        // Try to create the directory
+        if let Err(e) = std::fs::create_dir_all(&session_path) {
+            return Err(ApiError::BadRequest(format!(
+                "Path does not exist and cannot be created: {} (Error: {})",
+                req.session_save_dir, e
+            )));
+        }
+    }
+
+    // Validate path is a directory
+    if !session_path.is_dir() {
+        return Err(ApiError::BadRequest(format!(
+            "Path is not a directory: {}",
+            req.session_save_dir
+        )));
+    }
+
+    // Load existing config and update session_save_dir
+    let config_file = custom_path_config_file();
+    let mut config = load_custom_path_config();
+    config.session_save_dir = Some(session_path.clone());
+
+    // Ensure config directory exists
+    if let Some(parent) = config_file.parent() {
+        std::fs::create_dir_all(parent)
+            .map_err(|e| ApiError::Io(e))?;
+    }
+
+    let config_json = serde_json::to_string_pretty(&config)
+        .map_err(|e| ApiError::BadRequest(format!("Failed to serialize config: {}", e)))?;
+
+    std::fs::write(&config_file, config_json)
+        .map_err(|e| ApiError::Io(e))?;
+
+    Ok(ResponseJson(ApiResponse::success(SetCustomPathResponse {
+        message: "Session save directory updated. Changes will apply immediately.".to_string(),
+        requires_restart: false,
+        credentials_warning: false,
     })))
 }
 

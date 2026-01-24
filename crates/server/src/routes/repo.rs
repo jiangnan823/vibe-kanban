@@ -3,15 +3,16 @@ use axum::{
     extract::{Path, Query, State},
     http::StatusCode,
     response::Json as ResponseJson,
-    routing::{get, post},
+    routing::{get, post, put},
 };
 use db::models::{
     project::SearchResult,
     repo::{Repo, UpdateRepo},
 };
 use deployment::Deployment;
-use serde::Deserialize;
-use services::services::{file_search::SearchQuery, git::GitBranch};
+use serde::{Deserialize, Serialize};
+use services::services::{file_search::SearchQuery, git::GitBranch, repo_validator::{RepoPathValidator, ValidationResult}};
+use std::path::PathBuf;
 use ts_rs::TS;
 use utils::response::ApiResponse;
 use uuid::Uuid;
@@ -206,13 +207,111 @@ pub async fn search_repo(
     }
 }
 
+// ===== Repository Path Validation and Fixing =====
+
+#[derive(Debug, Deserialize, TS)]
+#[ts(export)]
+pub struct FixRepoPathRequest {
+    pub new_path: String,
+}
+
+#[derive(Debug, Serialize, TS)]
+#[ts(export)]
+pub struct RepoValidationInfo {
+    pub repo_id: Uuid,
+    pub repo_name: String,
+    pub path: String,
+    pub valid: bool,
+    pub error: Option<String>,
+}
+
+#[derive(Debug, Serialize, TS)]
+#[ts(export)]
+pub struct FixRepoPathResponse {
+    pub success: bool,
+    pub message: String,
+}
+
+impl From<services::services::repo_validator::RepoValidationInfo> for RepoValidationInfo {
+    fn from(info: services::services::repo_validator::RepoValidationInfo) -> Self {
+        Self {
+            repo_id: info.repo_id,
+            repo_name: info.repo_name,
+            path: info.path,
+            valid: info.valid,
+            error: info.error,
+        }
+    }
+}
+
+/// Validate all repository paths
+pub async fn validate_all_repos(
+    State(deployment): State<DeploymentImpl>,
+) -> Result<ResponseJson<ApiResponse<Vec<RepoValidationInfo>>>, ApiError> {
+    let validator = RepoPathValidator::new();
+    let results = validator
+        .validate_all_repos(&deployment.db().pool)
+        .await
+        .map_err(|e| ApiError::BadRequest(format!("Failed to validate repositories: {}", e)))?;
+
+    let results: Vec<RepoValidationInfo> = results.into_iter().map(Into::into).collect();
+
+    Ok(ResponseJson(ApiResponse::success(results)))
+}
+
+/// Fix a repository path
+pub async fn fix_repo_path(
+    State(deployment): State<DeploymentImpl>,
+    Path(repo_id): Path<Uuid>,
+    ResponseJson(req): ResponseJson<FixRepoPathRequest>,
+) -> Result<ResponseJson<ApiResponse<FixRepoPathResponse>>, ApiError> {
+    let new_path = PathBuf::from(&req.new_path);
+
+    // Validate the new path
+    let validator = RepoPathValidator::new();
+    let validation_result = validator
+        .validate_repo(&new_path, None)
+        .await
+        .map_err(|e| ApiError::BadRequest(format!("Failed to validate path: {}", e)))?;
+
+    match validation_result {
+        ValidationResult::Valid => {
+            // Update the repository path in database
+            validator
+                .fix_repo_path(&deployment.db().pool, repo_id, &new_path)
+                .await
+                .map_err(|e| ApiError::BadRequest(format!("Failed to update path: {}", e)))?;
+
+            Ok(ResponseJson(ApiResponse::success(FixRepoPathResponse {
+                success: true,
+                message: "Repository path updated successfully".to_string(),
+            })))
+        }
+        ValidationResult::PathNotFound => Err(ApiError::BadRequest(
+            "Path does not exist".to_string(),
+        )),
+        ValidationResult::NotADirectory => Err(ApiError::BadRequest(
+            "Path is not a directory".to_string(),
+        )),
+        ValidationResult::NotAGitRepo => Err(ApiError::BadRequest(
+            "Path is not a git repository".to_string(),
+        )),
+        ValidationResult::UrlMismatch { expected, current } => Err(ApiError::BadRequest(format!(
+            "Git remote URL mismatch. Expected: {}, Current: {}",
+            expected, current
+        ))),
+    }
+}
+
 pub fn router() -> Router<DeploymentImpl> {
     Router::new()
         .route("/repos", get(get_repos).post(register_repo))
         .route("/repos/init", post(init_repo))
         .route("/repos/batch", post(get_repos_batch))
+        .route("/repos/validate-all", post(validate_all_repos))
         .route("/repos/{repo_id}", get(get_repo).put(update_repo))
         .route("/repos/{repo_id}/branches", get(get_repo_branches))
         .route("/repos/{repo_id}/search", get(search_repo))
         .route("/repos/{repo_id}/open-editor", post(open_repo_in_editor))
+        .route("/repos/{repo_id}/fix-path", put(fix_repo_path))
 }

@@ -576,6 +576,66 @@ Analyze the changes in this branch and write:
    - Any important implementation details
    - At the end, include a note: "This PR was written using [Vibe Kanban](https://vibekanban.com)"
 `;
-export type PathConfigInfo = { current_path: string, custom_path: string | null, default_path: string, is_custom: boolean, };
-export type SetCustomPathRequest = { custom_path: string, };
-export type SetCustomPathResponse = { message: string, requires_restart: boolean, credentials_warning: boolean, };
+export type PathConfigInfo = {
+  current_path: string,
+  custom_path: string | null,
+  default_path: string,
+  is_custom: boolean,
+  session_save_dir: string | null,
+};
+
+export type SetCustomPathRequest = {
+  custom_path: string,
+};
+
+export type SetSessionPathRequest = {
+  session_save_dir: string,
+};
+
+export type SetCustomPathResponse = {
+  message: string,
+  requires_restart: boolean,
+  credentials_warning: boolean,
+};
+
+// Repository path validation types
+export type ValidationResult = 'Valid' | 'PathNotFound' | 'NotADirectory' | 'NotAGitRepo' | 'UrlMismatch';
+
+export type RepoValidationInfo = {
+  repo_id: string,
+  repo_name: string,
+  path: string,
+  valid: boolean,
+  error: string | null,
+};
+
+export type ValidateAllReposResponse = {
+  results: RepoValidationInfo[],
+};
+
+export type FixRepoPathRequest = {
+  new_path: string,
+};
+
+export type FixRepoPathResponse = {
+  success: boolean,
+  message: string,
+};
+
+// Task session types
+export type SaveSessionRequest = {
+  workspace_id: string,
+};
+
+export type SaveSessionResponse = {
+  file_path: string,
+  message: string,
+};
+
+export type TaskSession = {
+  id: string,
+  task_id: string,
+  file_path: string,
+  created_at: Date,
+};
+

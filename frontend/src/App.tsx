@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
 import i18n from '@/i18n';
@@ -13,6 +13,8 @@ import { usePreviousPath } from '@/hooks/usePreviousPath';
 
 import {
   AgentSettings,
+  DataManagement,
+  // FirstRunWizard,
   GeneralSettings,
   McpSettings,
   OrganizationSettings,
@@ -55,6 +57,13 @@ function AppContent() {
   // Track previous path for back navigation
   usePreviousPath();
 
+  // Use ref to track which dialogs we've already shown, preventing loops
+  const dialogsShownRef = useRef({
+    disclaimer: false,
+    onboarding: false,
+    releaseNotes: false,
+  });
+
   // Handle opt-in/opt-out and user identification when config loads
   useEffect(() => {
     if (!posthog || !analyticsUserId) return;
@@ -75,7 +84,8 @@ function AppContent() {
 
     const showNextStep = async () => {
       // 1) Disclaimer - first step
-      if (!config.disclaimer_acknowledged) {
+      if (!config.disclaimer_acknowledged && !dialogsShownRef.current.disclaimer) {
+        dialogsShownRef.current.disclaimer = true;
         await DisclaimerDialog.show();
         if (!cancelled) {
           await updateAndSaveConfig({ disclaimer_acknowledged: true });
@@ -85,7 +95,8 @@ function AppContent() {
       }
 
       // 2) Onboarding - configure executor and editor
-      if (!config.onboarding_acknowledged) {
+      if (!config.onboarding_acknowledged && !dialogsShownRef.current.onboarding) {
+        dialogsShownRef.current.onboarding = true;
         const result = await OnboardingDialog.show();
         if (!cancelled) {
           await updateAndSaveConfig({
@@ -99,7 +110,8 @@ function AppContent() {
       }
 
       // 3) Release notes - last step
-      if (config.show_release_notes) {
+      if (config.show_release_notes && !dialogsShownRef.current.releaseNotes) {
+        dialogsShownRef.current.releaseNotes = true;
         await ReleaseNotesDialog.show();
         if (!cancelled) {
           await updateAndSaveConfig({ show_release_notes: false });
@@ -114,7 +126,9 @@ function AppContent() {
     return () => {
       cancelled = true;
     };
-  }, [config, isSignedIn, updateAndSaveConfig]);
+    // Only run when config first loads or user signs in
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSignedIn]);
 
   // TODO: Disabled while developing FE only
   // if (loading) {
@@ -130,6 +144,9 @@ function AppContent() {
       <ThemeProvider initialTheme={config?.theme || ThemeMode.SYSTEM}>
         <SearchProvider>
           <SentryRoutes>
+            {/* ========== FIRST RUN WIZARD (outside layout) ========== */}
+            {/* <Route path="/wizard" element={<FirstRunWizard />} /> */}
+
             {/* ========== LEGACY DESIGN ROUTES ========== */}
             {/* VS Code full-page logs route (outside NormalLayout for minimal UI) */}
             <Route
@@ -166,6 +183,7 @@ function AppContent() {
                 />
                 <Route path="agents" element={<AgentSettings />} />
                 <Route path="mcp" element={<McpSettings />} />
+                <Route path="data-management" element={<DataManagement />} />
               </Route>
               <Route
                 path="/mcp-servers"

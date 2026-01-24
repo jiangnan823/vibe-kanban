@@ -934,6 +934,14 @@ export const dataStorageApi = {
     return handleApiResponse<SetCustomPathResponse>(response);
   },
 
+  setSessionPath: async (sessionSaveDir: string): Promise<SetCustomPathResponse> => {
+    const response = await makeRequest('/api/path-config/session', {
+      method: 'PUT',
+      body: JSON.stringify({ session_save_dir: sessionSaveDir }),
+    });
+    return handleApiResponse<SetCustomPathResponse>(response);
+  },
+
   resetToDefault: async (): Promise<{ message: string }> => {
     const response = await makeRequest('/api/path-config/reset', {
       method: 'PUT',

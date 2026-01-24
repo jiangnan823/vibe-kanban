@@ -4,7 +4,7 @@ use anyhow;
 use axum::{
     Extension, Json, Router,
     extract::{
-        Query, State,
+        Path, Query, State,
         ws::{WebSocket, WebSocketUpgrade},
     },
     http::StatusCode,
@@ -23,7 +23,7 @@ use deployment::Deployment;
 use executors::profile::ExecutorProfileId;
 use futures_util::{SinkExt, StreamExt, TryStreamExt};
 use serde::{Deserialize, Serialize};
-use services::services::{container::ContainerService, workspace_manager::WorkspaceManager};
+use services::services::{container::ContainerService, workspace_manager::WorkspaceManager, session_exporter::SessionExporter};
 use sqlx::Error as SqlxError;
 use ts_rs::TS;
 use utils::response::ApiResponse;
@@ -389,10 +389,57 @@ pub async fn delete_task(
     Ok((StatusCode::ACCEPTED, ResponseJson(ApiResponse::success(()))))
 }
 
+// ===== Session Management =====
+
+#[derive(Debug, Deserialize, TS)]
+#[ts(export)]
+pub struct SaveSessionRequest {
+    pub workspace_id: Uuid,
+}
+
+#[derive(Debug, Serialize, TS)]
+#[ts(export)]
+pub struct SaveSessionResponse {
+    pub file_path: String,
+    pub message: String,
+}
+
+/// Save a task session to a Markdown file
+pub async fn save_task_session(
+    State(deployment): State<DeploymentImpl>,
+    Path(task_id): Path<Uuid>,
+    ResponseJson(req): ResponseJson<SaveSessionRequest>,
+) -> Result<ResponseJson<ApiResponse<SaveSessionResponse>>, ApiError> {
+    let exporter = SessionExporter::new(deployment.db().pool.clone());
+    let session_path = exporter
+        .save_session(task_id, req.workspace_id)
+        .await
+        .map_err(|e| ApiError::BadRequest(format!("Failed to save session: {}", e)))?;
+
+    Ok(ResponseJson(ApiResponse::success(SaveSessionResponse {
+        file_path: session_path.to_string_lossy().to_string(),
+        message: "Session saved successfully".to_string(),
+    })))
+}
+
+/// Get all saved sessions for a task
+pub async fn get_task_sessions(
+    State(deployment): State<DeploymentImpl>,
+    Path(task_id): Path<Uuid>,
+) -> Result<ResponseJson<ApiResponse<Vec<db::models::task_session::TaskSession>>>, ApiError> {
+    let sessions = db::models::task_session::TaskSession::find_by_task_id(&deployment.db().pool, task_id)
+        .await
+        .map_err(|e| ApiError::BadRequest(format!("Failed to get sessions: {}", e)))?;
+
+    Ok(ResponseJson(ApiResponse::success(sessions)))
+}
+
 pub fn router(deployment: &DeploymentImpl) -> Router<DeploymentImpl> {
     let task_actions_router = Router::new()
         .route("/", put(update_task))
-        .route("/", delete(delete_task));
+        .route("/", delete(delete_task))
+        .route("/save-session", post(save_task_session))
+        .route("/sessions", get(get_task_sessions));
 
     let task_id_router = Router::new()
         .route("/", get(get_task))

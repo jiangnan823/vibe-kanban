@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal, Save } from 'lucide-react';
 import type { TaskWithAttemptStatus } from 'shared/types';
 import { useOpenInEditor } from '@/hooks/useOpenInEditor';
 import { DeleteTaskConfirmationDialog } from '@/components/dialogs/tasks/DeleteTaskConfirmationDialog';
@@ -19,6 +19,7 @@ import { GitActionsDialog } from '@/components/dialogs/tasks/GitActionsDialog';
 import { EditBranchNameDialog } from '@/components/dialogs/tasks/EditBranchNameDialog';
 import { useProject } from '@/contexts/ProjectContext';
 import { openTaskForm } from '@/lib/openTaskForm';
+import { toast } from 'sonner';
 
 import { useNavigate } from 'react-router-dom';
 import { WorkspaceWithSession } from '@/types/attempt';
@@ -128,6 +129,33 @@ export function ActionsDropdown({ task, attempt }: ActionsDropdownProps) {
     });
   };
 
+  const handleSaveSession = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!task?.id || !attempt?.id || !projectId) return;
+
+    try {
+      const response = await fetch(
+        `/api/projects/${projectId}/tasks/${task.id}/save-session`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ workspace_id: attempt.id }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success('Session saved successfully');
+      } else {
+        toast.error(data.message || 'Failed to save session');
+      }
+    } catch (error) {
+      toast.error('Failed to save session');
+      console.error(error);
+    }
+  };
+
   return (
     <>
       <DropdownMenu>
@@ -198,6 +226,12 @@ export function ActionsDropdown({ task, attempt }: ActionsDropdownProps) {
               <DropdownMenuItem disabled={!projectId} onClick={handleDuplicate}>
                 {t('actionsMenu.duplicate')}
               </DropdownMenuItem>
+              {attempt && (
+                <DropdownMenuItem onClick={handleSaveSession}>
+                  <Save className="h-4 w-4 mr-2" />
+                  Save Session
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem
                 disabled={!projectId}
                 onClick={handleDelete}

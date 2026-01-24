@@ -50,6 +50,7 @@ sha2 = "0.10"
 strum = "0.27.2"
 regex = "1"
 directories = "5.0.1"
+zip = { version = "2.2", features = ["chrono"] }
 
 [build-dependencies]
 dotenv = "0.15"

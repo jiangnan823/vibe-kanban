@@ -10,6 +10,7 @@ pub mod approvals;
 pub mod app_management;
 pub mod config;
 pub mod containers;
+pub mod data_management;
 pub mod filesystem;
 // pub mod github;
 pub mod events;
@@ -48,6 +49,7 @@ pub fn router(deployment: DeploymentImpl) -> IntoMakeService<Router> {
         .merge(scratch::router(&deployment))
         .merge(sessions::router(&deployment))
         .merge(terminal::router())
+        .nest("/data-management", data_management::router())
         .nest("/images", images::routes())
         // App management routes
         .nest("/app", app_management::router())

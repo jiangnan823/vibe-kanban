@@ -2,6 +2,7 @@ pub mod analytics;
 pub mod approvals;
 pub mod auth;
 pub mod config;
+// pub mod config_watcher;  // Temporarily disabled due to compiler ICE
 pub mod container;
 pub mod diff_stream;
 pub mod events;
@@ -21,5 +22,7 @@ pub mod qa_repos;
 pub mod queued_message;
 pub mod remote_client;
 pub mod repo;
+pub mod repo_validator;
+pub mod session_exporter;
 pub mod workspace_manager;
 pub mod worktree_manager;

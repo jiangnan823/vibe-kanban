@@ -236,6 +236,34 @@ impl Repo {
         .await
     }
 
+    /// Get all repositories (alias for list_all)
+    pub async fn all(pool: &SqlitePool) -> Result<Vec<Self>, sqlx::Error> {
+        Self::list_all(pool).await
+    }
+
+    /// Update the path of a repository
+    pub async fn update_path(
+        pool: &SqlitePool,
+        id: Uuid,
+        new_path: &Path,
+    ) -> Result<(), sqlx::Error> {
+        let path_str = new_path.to_string_lossy().to_string();
+        let new_name = new_path
+            .file_name()
+            .map(|n| n.to_string_lossy().to_string())
+            .unwrap_or_else(|| "unnamed".to_string());
+
+        sqlx::query!(
+            "UPDATE repos SET path = $1, name = $2, updated_at = datetime('now', 'subsec') WHERE id = $3",
+            path_str,
+            new_name,
+            id
+        )
+        .execute(pool)
+        .await?;
+        Ok(())
+    }
+
     pub async fn update(
         pool: &SqlitePool,
         id: Uuid,
