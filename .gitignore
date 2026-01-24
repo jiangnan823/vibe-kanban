@@ -102,3 +102,6 @@ SCAN_REPORT.md
 # Test scripts and binaries
 test-*.sh
 server-linux-*
+
+# Knowledge base (local reference only)
+knowledge-base/
