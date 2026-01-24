@@ -284,6 +284,166 @@
           "emptyPath": "Please select a valid folder path."
         },
         "custom": "Custom"
+      },
+      "dataManagement": {
+        "title": "Data Management",
+        "description": "Manage configuration, sessions, and repository paths",
+        "tabs": {
+          "config": "Configuration",
+          "sessions": "Sessions",
+          "repos": "Repositories",
+          "importExport": "Import/Export"
+        },
+        "configSource": {
+          "currentConfig": {
+            "title": "Current Configuration Source",
+            "description": "Storage location for application configuration"
+          },
+          "currentLocation": "Current Location",
+          "sessionDirectory": "Session Directory",
+          "notConfigured": "Not Configured",
+          "configurationFiles": "Configuration Files",
+          "custom": "Custom",
+          "default": "Default",
+          "validateConfiguration": "Validate Configuration",
+          "reloadConfig": "Reload Configuration",
+          "reloading": "Reloading...",
+          "openFolder": "Open Folder",
+          "note": "Note: Click \"Reload Configuration\" to apply configuration changes without restarting the application.",
+          "switchSource": {
+            "title": "Switch Configuration Source",
+            "description": "Change to a different configuration directory (e.g., for multi-device sync)"
+          },
+          "requirements": "Requirements:",
+          "requirementsList": [
+            "Directory must exist and contain config.json file",
+            "Optional: profiles.json and custom_path.json",
+            "Choose to copy existing configuration to new location"
+          ],
+          "newConfigPath": "New Configuration Path",
+          "pathPlaceholder": "/path/to/config/directory",
+          "selectConfigDir": "Select Configuration Directory",
+          "copyExisting": "Copy existing configuration files to new location",
+          "switchSourceButton": "Switch Configuration Source",
+          "switching": "Switching...",
+          "important": "Important:",
+          "importantList": [
+            "After switching, the application will use configuration from the new location",
+            "Click \"Reload Configuration\" to apply changes",
+            "Ensure the new directory is accessible with correct permissions"
+          ]
+        },
+        "sessions": {
+          "sessionDirectory": {
+            "title": "Session Directory",
+            "description": "Location where task sessions are saved as Markdown files"
+          },
+          "directoryPath": "Directory Path",
+          "sessionFiles": "Session Files",
+          "totalSize": "Total Size",
+          "latestSession": "Latest Session",
+          "never": "Never",
+          "scanSessions": "Scan Sessions",
+          "openFolder": "Open Folder",
+          "savedSessions": {
+            "title": "Saved Sessions",
+            "description": "Recently saved task sessions"
+          },
+          "noSavedSessions": "No saved sessions found",
+          "unknown": "Unknown",
+          "untitled": "Untitled",
+          "view": "View",
+          "scanRepositories": "Scan Repositories"
+        },
+        "repos": {
+          "title": "Repository Path Validation",
+          "description": "Check and fix invalid repository paths for cross-device usage",
+          "scanningRepositories": "Scanning repositories...",
+          "scanningProgress": "{{progress}}%",
+          "scanRepositories": "Scan Repositories",
+          "fixAll": "Fix All ({{count}})",
+          "foundRepos": "Found {{count}} repositories ({{invalid}} invalid)",
+          "clickScan": "Click \"Scan Repositories\" to check repository paths",
+          "valid": "Valid",
+          "invalid": "Invalid",
+          "fixPath": "Fix Path",
+          "selectNewPath": "Select new path for repository \"{{name}}\"",
+          "enterNewPath": "Enter new path for repository \"{{name}}\":",
+          "noInvalidRepos": "No invalid repositories found",
+          "foundInvalidRepos": "Found {{count}} invalid repositories. Please fix them individually."
+        },
+        "importExport": {
+          "exportConfig": {
+            "title": "Export Configuration",
+            "description": "Download your application configuration as a JSON file",
+            "includeInExport": "Export includes:",
+            "applicationConfig": "Application Configuration (config.json)",
+            "agentProfiles": "Agent Profiles (profiles.json)",
+            "projectMetadata": "Project Metadata (paths excluded)",
+            "taskTags": "Task Tags",
+            "exportButton": "Export Configuration",
+            "exporting": "Exporting..."
+          },
+          "exportSessions": {
+            "title": "Export Sessions",
+            "description": "Download all session files as a ZIP archive",
+            "organizedAs": "Sessions will be organized as:",
+            "exportAllButton": "Export All Sessions",
+            "exporting": "Exporting..."
+          },
+          "importConfig": {
+            "title": "Import Configuration",
+            "description": "Import a previously exported configuration file",
+            "importOptions": "Import options:",
+            "skipExisting": "Skip existing items (don't overwrite)",
+            "overwriteConfig": "Overwrite configuration files",
+            "note": "Note:",
+            "noteList": [
+              "Import will merge with existing configuration",
+              "Sensitive data (credentials) is not included",
+              "Paths may need adjustment when used across devices",
+              "Application restart may be required"
+            ],
+            "importButton": "Import Configuration",
+            "importing": "Importing...",
+            "importResult": "Import Result:",
+            "imported": "Imported ({{count}}):",
+            "skipped": "Skipped ({{count}}):",
+            "errors": "Errors ({{count}}):",
+            "andMore": "...and {{count}} more"
+          }
+        },
+        "toasts": {
+          "failedToLoadConfig": "Failed to load configuration information",
+          "configurationValid": "Configuration is valid",
+          "configurationIssues": "Configuration issues: {{issues}}",
+          "validationFailed": "Validation failed",
+          "reloadedSuccessfully": "Configuration reloaded successfully",
+          "reloadFailed": "Failed to reload configuration",
+          "enterConfigPath": "Please enter configuration path",
+          "switchedSuccessfully": "Configuration source switched successfully",
+          "switchFailed": "Failed to switch configuration source",
+          "selectFolderFailed": "Failed to select folder",
+          "failedToLoadSession": "Failed to load session data",
+          "scanCompleted": "Scan completed",
+          "failedToScan": "Failed to scan sessions",
+          "failedToOpenSession": "Failed to open session",
+          "deleteConfirm": "Delete session \"{{name}}\"?",
+          "sessionDeleted": "Session deleted",
+          "failedToDelete": "Failed to delete session",
+          "failedToScanRepos": "Failed to scan repositories",
+          "pathUpdated": "Repository path updated",
+          "updateFailed": "Failed to update path",
+          "failedToFixPath": "Failed to fix repository path",
+          "exportedSuccessfully": "Configuration exported successfully",
+          "exportFailed": "Failed to export configuration",
+          "sessionsExportedSuccessfully": "Sessions exported successfully",
+          "importedSuccessfully": "Configuration imported successfully. Please restart the application.",
+          "importFailed": "Failed to import configuration"
+        },
+        "errors": {
+          "loading": "Loading..."
+        }
       }
     },
     "agents": {

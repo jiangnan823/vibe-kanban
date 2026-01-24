@@ -9,10 +9,13 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { FolderOpen, CheckCircle, XCircle, RefreshCw, FolderOpen as FolderOpenIcon, ArrowRight } from 'lucide-react';
 import { dataStorageApi } from '@/lib/api';
+import { useFilePicker } from '@/hooks';
+import { normalizePath } from '@/lib/pathUtils';
 import type { ConfigSourceInfo } from '@/types';
 
 export function ConfigSourceManagement() {
   const { t } = useTranslation();
+  const { pickFolder } = useFilePicker();
   const [configInfo, setConfigInfo] = useState<ConfigSourceInfo | null>(null);
   const [validating, setValidating] = useState(false);
   const [reloading, setReloading] = useState(false);
@@ -119,23 +122,12 @@ export function ConfigSourceManagement() {
   };
 
   const handleSelectFolder = async () => {
-    // Use Electron/Tauri folder picker if available
-    if (window.api?.selectFolder) {
-      try {
-        const path = await window.api.selectFolder();
-        if (path) {
-          setNewConfigPath(path);
-        }
-      } catch (error) {
-        toast.error(t('settings.general.dataManagement.toasts.selectFolderFailed'));
-        console.error(error);
-      }
-    } else {
-      // Fallback: prompt user to enter path manually
-      const path = prompt(t('settings.general.dataManagement.configSource.newConfigPath') + ':');
-      if (path) {
-        setNewConfigPath(path);
-      }
+    // Use file picker to select configuration directory
+    const path = await pickFolder(t('settings.general.dataManagement.configSource.selectConfigDir'));
+
+    if (path) {
+      // Normalize path for cross-platform compatibility
+      setNewConfigPath(normalizePath(path));
     }
   };
 

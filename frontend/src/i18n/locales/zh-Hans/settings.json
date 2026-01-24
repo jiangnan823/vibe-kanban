@@ -347,6 +347,7 @@
           ],
           "newConfigPath": "新配置路径",
           "pathPlaceholder": "/path/to/config/directory",
+          "selectConfigDir": "选择配置目录",
           "copyExisting": "将现有配置文件复制到新位置",
           "switchSourceButton": "切换配置源",
           "switching": "切换中...",
@@ -391,6 +392,7 @@
           "valid": "有效",
           "invalid": "无效",
           "fixPath": "修复路径",
+          "selectNewPath": "选择仓库 \"{{name}}\" 的新路径",
           "enterNewPath": "输入仓库 \"{{name}}\" 的新路径：",
           "noInvalidRepos": "未发现无效仓库",
           "foundInvalidRepos": "发现 {{count}} 个无效仓库。请逐个修复。"

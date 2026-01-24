@@ -6,6 +6,8 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { RefreshCw, AlertCircle, CheckCircle, FolderOpen } from 'lucide-react';
+import { useFilePicker } from '@/hooks';
+import { normalizePath } from '@/lib/pathUtils';
 
 interface RepoValidationInfo {
   repo_id: string;
@@ -17,6 +19,7 @@ interface RepoValidationInfo {
 
 export function RepoPathManagement() {
   const { t } = useTranslation();
+  const { pickFolder } = useFilePicker();
   const [repos, setRepos] = useState<RepoValidationInfo[]>([]);
   const [scanning, setScanning] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -42,19 +45,19 @@ export function RepoPathManagement() {
   };
 
   const handleFixPath = async (repo: RepoValidationInfo) => {
-    // For now, just show an alert. In a real implementation, this would open a file picker
-    const newPath = prompt(
-      t('settings.general.dataManagement.repos.enterNewPath', { name: repo.repo_name }),
-      repo.path
-    );
+    // Use file picker to select new repository path
+    const newPath = await pickFolder(t('settings.general.dataManagement.repos.selectNewPath', { name: repo.repo_name }));
 
     if (!newPath) return;
+
+    // Normalize path for cross-platform compatibility
+    const normalizedPath = normalizePath(newPath);
 
     try {
       const response = await fetch(`/api/repos/${repo.repo_id}/fix-path`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ new_path: newPath }),
+        body: JSON.stringify({ new_path: normalizedPath }),
       });
 
       const data = await response.json();

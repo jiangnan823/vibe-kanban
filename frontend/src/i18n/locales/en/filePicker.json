@@ -1,0 +1,34 @@
+{
+  "filePrompt": "Select file or enter file path",
+  "folderPrompt": "Select folder or enter folder path",
+  "selectFile": "Select File",
+  "selectFolder": "Select Folder",
+  "selectFileFolder": "Select File or Folder",
+  "selecting": "Selecting...",
+  "selected": "Selected",
+  "selectionCancelled": "Selection cancelled",
+  "selectionFailed": "Selection failed",
+  "notSupported": "File picker is not supported in your browser",
+  "fallbackToManual": "Please enter the path manually",
+  "multipleFiles": "{{count}} files selected",
+  "noFileSelected": "No file selected",
+  "noFolderSelected": "No folder selected",
+  "invalidPath": "Invalid path",
+  "pathRequired": "Please select or enter a path",
+  "fileOperations": {
+    "open": "Open",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "errors": {
+    "permissionDenied": "Permission denied",
+    "fileNotFound": "File not found",
+    "invalidFileType": "Invalid file type",
+    "unknownError": "Unknown error"
+  },
+  "buttons": {
+    "browse": "Browse...",
+    "change": "Change",
+    "openFolder": "Open Folder"
+  }
+}

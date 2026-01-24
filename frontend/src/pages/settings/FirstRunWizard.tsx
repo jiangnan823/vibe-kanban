@@ -9,6 +9,8 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { CheckCircle, XCircle, ArrowRight, FolderOpen, Sparkles } from 'lucide-react';
+import { useFilePicker } from '@/hooks';
+import { normalizePath } from '@/lib/pathUtils';
 
 type FirstRunCheckResponse = {
   is_first_run: boolean;
@@ -23,6 +25,7 @@ type WizardStep = 'welcome' | 'choose-config' | 'import-config' | 'complete';
 export function FirstRunWizard() {
   const { t } = useTranslation(['wizard', 'common', 'settings']);
   const navigate = useNavigate();
+  const { pickFolder } = useFilePicker();
   const [currentStep, setCurrentStep] = useState<WizardStep>('welcome');
   const [checkResult, setCheckResult] = useState<FirstRunCheckResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -68,23 +71,14 @@ export function FirstRunWizard() {
   };
 
   const handleSelectFolder = async () => {
-    if (window.api?.selectFolder) {
-      try {
-        const path = await window.api.selectFolder();
-        if (path) {
-          setConfigPath(path);
-          await validateConfig(path);
-        }
-      } catch (error) {
-        toast.error(t('error.selectFolderFailed'));
-        console.error(error);
-      }
-    } else {
-      const path = prompt(t('prompt.configPath'));
-      if (path) {
-        setConfigPath(path);
-        await validateConfig(path);
-      }
+    // Use file picker to select configuration directory
+    const path = await pickFolder(t('wizard.prompt.configPath'));
+
+    if (path) {
+      // Normalize path for cross-platform compatibility
+      const normalizedPath = normalizePath(path);
+      setConfigPath(normalizedPath);
+      await validateConfig(normalizedPath);
     }
   };
 

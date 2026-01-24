@@ -1,0 +1,34 @@
+{
+  "filePrompt": "选择文件或输入文件路径",
+  "folderPrompt": "选择文件夹或输入文件夹路径",
+  "selectFile": "选择文件",
+  "selectFolder": "选择文件夹",
+  "selectFileFolder": "选择文件或文件夹",
+  "selecting": "正在选择...",
+  "selected": "已选择",
+  "selectionCancelled": "已取消选择",
+  "selectionFailed": "选择失败",
+  "notSupported": "您的浏览器不支持文件选择功能",
+  "fallbackToManual": "请手动输入路径",
+  "multipleFiles": "已选择 {{count}} 个文件",
+  "noFileSelected": "未选择文件",
+  "noFolderSelected": "未选择文件夹",
+  "invalidPath": "无效的路径",
+  "pathRequired": "请选择或输入路径",
+  "fileOperations": {
+    "open": "打开",
+    "save": "保存",
+    "cancel": "取消"
+  },
+  "errors": {
+    "permissionDenied": "没有访问权限",
+    "fileNotFound": "文件不存在",
+    "invalidFileType": "无效的文件类型",
+    "unknownError": "未知错误"
+  },
+  "buttons": {
+    "browse": "浏览...",
+    "change": "更改",
+    "openFolder": "打开文件夹"
+  }
+}
