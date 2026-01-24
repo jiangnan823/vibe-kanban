@@ -90,3 +90,15 @@ vibe-kanban-cloud/
 .claude/
 nul
 start-backend.bat
+
+# Test and process documentation (keep only essential docs)
+*_TEST_GUIDE.md
+*_SUMMARY.md
+*_REPORT.md
+TEST_CASES.md
+ANALYSIS.md
+SCAN_REPORT.md
+
+# Test scripts and binaries
+test-*.sh
+server-linux-*
