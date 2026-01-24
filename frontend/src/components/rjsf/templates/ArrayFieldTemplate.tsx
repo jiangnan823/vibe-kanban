@@ -2,10 +2,12 @@ import type {
   ArrayFieldTemplateProps,
   ArrayFieldItemTemplateProps,
 } from '@rjsf/utils';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Plus, X } from 'lucide-react';
 
 export const ArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
+  const { t } = useTranslation('form');
   const { canAdd, items, onAddClick, disabled, readonly } = props;
 
   if (!items || (items.length === 0 && !canAdd)) {
@@ -26,7 +28,7 @@ export const ArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
           className="w-full"
         >
           <Plus className="w-4 h-4 mr-2" />
-          Add Item
+          {t('array.addItem')}
         </Button>
       )}
     </div>
@@ -34,6 +36,7 @@ export const ArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
 };
 
 export const ArrayFieldItemTemplate = (props: ArrayFieldItemTemplateProps) => {
+  const { t } = useTranslation('form');
   const { children, buttonsProps, disabled, readonly } = props;
 
   return (
@@ -49,7 +52,7 @@ export const ArrayFieldItemTemplate = (props: ArrayFieldItemTemplateProps) => {
           onClick={buttonsProps.onRemoveItem}
           disabled={disabled || readonly || buttonsProps.disabled}
           className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all duration-200 shrink-0"
-          title="Remove item"
+          title={t('array.removeItem')}
         >
           <X className="w-4 h-4" />
         </Button>

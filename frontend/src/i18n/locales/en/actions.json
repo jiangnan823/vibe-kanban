@@ -1,4 +1,5 @@
 {
+  "saveSession": "Save Session",
   "saveSuccess": "Session saved successfully",
   "saveFailed": "Failed to save session"
 }

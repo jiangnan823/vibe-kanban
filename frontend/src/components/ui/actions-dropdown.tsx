@@ -30,7 +30,7 @@ interface ActionsDropdownProps {
 }
 
 export function ActionsDropdown({ task, attempt }: ActionsDropdownProps) {
-  const { t } = useTranslation('tasks');
+  const { t } = useTranslation(['tasks', 'actions', 'common']);
   const { projectId } = useProject();
   const openInEditor = useOpenInEditor(attempt?.id);
   const navigate = useNavigate();
@@ -146,12 +146,12 @@ export function ActionsDropdown({ task, attempt }: ActionsDropdownProps) {
       const data = await response.json();
 
       if (data.success) {
-        toast.success('Session saved successfully');
+        toast.success(t('actions:saveSuccess'));
       } else {
-        toast.error(data.message || 'Failed to save session');
+        toast.error(data.message || t('actions:saveFailed'));
       }
     } catch (error) {
-      toast.error('Failed to save session');
+      toast.error(t('actions:saveFailed'));
       console.error(error);
     }
   };
@@ -229,7 +229,7 @@ export function ActionsDropdown({ task, attempt }: ActionsDropdownProps) {
               {attempt && (
                 <DropdownMenuItem onClick={handleSaveSession}>
                   <Save className="h-4 w-4 mr-2" />
-                  Save Session
+                  {t('saveSession')}
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem

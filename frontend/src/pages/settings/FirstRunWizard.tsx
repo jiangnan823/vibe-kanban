@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -20,6 +21,7 @@ type FirstRunCheckResponse = {
 type WizardStep = 'welcome' | 'choose-config' | 'import-config' | 'complete';
 
 export function FirstRunWizard() {
+  const { t } = useTranslation(['wizard', 'common', 'settings']);
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState<WizardStep>('welcome');
   const [checkResult, setCheckResult] = useState<FirstRunCheckResponse | null>(null);
@@ -74,11 +76,11 @@ export function FirstRunWizard() {
           await validateConfig(path);
         }
       } catch (error) {
-        toast.error('Failed to select folder');
+        toast.error(t('error.selectFolderFailed'));
         console.error(error);
       }
     } else {
-      const path = prompt('Enter the full path to the configuration directory:');
+      const path = prompt(t('prompt.configPath'));
       if (path) {
         setConfigPath(path);
         await validateConfig(path);
@@ -98,17 +100,17 @@ export function FirstRunWizard() {
       setConfigValid(data.data.valid);
 
       if (!data.data.valid) {
-        toast.error(`Invalid config: ${data.data.issues.join(', ')}`);
+        toast.error(t('error.invalidConfig', { issues: data.data.issues.join(', ') }));
       }
     } catch (error) {
       setConfigValid(false);
-      toast.error('Failed to validate configuration');
+      toast.error(t('error.validationFailed'));
     }
   };
 
   const handleApplyConfig = async () => {
     if (!configPath || !configValid) {
-      toast.error('Please select a valid configuration directory');
+      toast.error(t('error.invalidDirectory'));
       return;
     }
 
@@ -126,13 +128,13 @@ export function FirstRunWizard() {
       const data = await response.json();
 
       if (data.success) {
-        toast.success('Configuration applied successfully!');
+        toast.success(t('success.configApplied'));
         setCurrentStep('complete');
       } else {
-        toast.error(data.message || 'Failed to apply configuration');
+        toast.error(data.message || t('error.applyFailed'));
       }
     } catch (error) {
-      toast.error('Failed to apply configuration');
+      toast.error(t('error.applyFailed'));
       console.error(error);
     } finally {
       setSwitching(false);
@@ -152,7 +154,7 @@ export function FirstRunWizard() {
           <CardContent className="p-6">
             <div className="text-center">
               <Sparkles className="h-12 w-12 mx-auto mb-4 text-primary animate-pulse" />
-              <p className="text-muted-foreground">Checking configuration...</p>
+              <p className="text-muted-foreground">{t('loading.checkingConfiguration')}</p>
             </div>
           </CardContent>
         </Card>
@@ -165,9 +167,9 @@ export function FirstRunWizard() {
       <div className="w-full max-w-2xl space-y-4">
         {/* Progress Indicator */}
         <div className="flex justify-center gap-2">
-          <Badge variant={currentStep === 'welcome' ? 'default' : 'secondary'}>1. Welcome</Badge>
-          <Badge variant={currentStep === 'choose-config' ? 'default' : 'secondary'}>2. Setup</Badge>
-          <Badge variant={currentStep === 'complete' ? 'default' : 'secondary'}>3. Complete</Badge>
+          <Badge variant={currentStep === 'welcome' ? 'default' : 'secondary'}>{t('progress.welcome')}</Badge>
+          <Badge variant={currentStep === 'choose-config' ? 'default' : 'secondary'}>{t('progress.setup')}</Badge>
+          <Badge variant={currentStep === 'complete' ? 'default' : 'secondary'}>{t('progress.complete')}</Badge>
         </div>
 
         {/* Step 1: Welcome */}
@@ -175,18 +177,18 @@ export function FirstRunWizard() {
           <Card>
             <CardHeader className="text-center">
               <Sparkles className="h-16 w-16 mx-auto mb-4 text-primary" />
-              <CardTitle className="text-2xl">Welcome to Vibe Kanban</CardTitle>
+              <CardTitle className="text-2xl">{t('welcome.title')}</CardTitle>
               <CardDescription>
                 {checkResult?.is_first_run
-                  ? "Let's get you set up with your configuration"
-                  : "Let's fix your configuration issues"}
+                  ? t('welcome.firstRunDescription')
+                  : t('welcome.fixConfigDescription')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Issues */}
               {checkResult && checkResult.issues.length > 0 && (
                 <div className="rounded-lg bg-destructive/10 p-4 space-y-2">
-                  <p className="font-medium text-sm text-destructive">Configuration Issues:</p>
+                  <p className="font-medium text-sm text-destructive">{t('welcome.issues.label')}</p>
                   <ul className="list-disc list-inside text-sm text-destructive space-y-1">
                     {checkResult.issues.map((issue, i) => (
                       <li key={i}>{issue}</li>
@@ -205,9 +207,9 @@ export function FirstRunWizard() {
                     <div className="flex items-start gap-3">
                       <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
                       <div className="flex-1">
-                        <h3 className="font-medium">Use Default Configuration</h3>
+                        <h3 className="font-medium">{t('welcome.options.useDefault.title')}</h3>
                         <p className="text-sm text-muted-foreground mt-1">
-                          Start with default settings. You can customize later in Settings.
+                          {t('welcome.options.useDefault.description')}
                         </p>
                       </div>
                     </div>
@@ -222,9 +224,9 @@ export function FirstRunWizard() {
                     <div className="flex items-start gap-3">
                       <FolderOpen className="h-5 w-5 text-blue-500 mt-0.5" />
                       <div className="flex-1">
-                        <h3 className="font-medium">Use Existing Configuration</h3>
+                        <h3 className="font-medium">{t('welcome.options.useExisting.title')}</h3>
                         <p className="text-sm text-muted-foreground mt-1">
-                          Import from another device or use a shared configuration directory.
+                          {t('welcome.options.useExisting.description')}
                         </p>
                       </div>
                     </div>
@@ -235,7 +237,7 @@ export function FirstRunWizard() {
               {/* Suggested Actions */}
               {checkResult && checkResult.suggested_actions.length > 0 && (
                 <div className="rounded-lg bg-muted p-4">
-                  <p className="font-medium text-sm mb-2">Suggested Actions:</p>
+                  <p className="font-medium text-sm mb-2">{t('welcome.suggestedActions.title')}</p>
                   <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
                     {checkResult.suggested_actions.map((action, i) => (
                       <li key={i}>{action}</li>
@@ -251,29 +253,29 @@ export function FirstRunWizard() {
         {currentStep === 'choose-config' && (
           <Card>
             <CardHeader>
-              <CardTitle>Select Configuration Directory</CardTitle>
+              <CardTitle>{t('setup.title')}</CardTitle>
               <CardDescription>
-                Choose a directory containing your config.json file
+                {t('setup.description')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Info */}
               <div className="rounded-lg bg-blue-50 dark:bg-blue-950 p-4 text-sm">
-                <p className="font-medium text-blue-800 dark:text-blue-200 mb-2">Requirements:</p>
+                <p className="font-medium text-blue-800 dark:text-blue-200 mb-2">{t('setup.requirements.title')}</p>
                 <ul className="list-disc list-inside text-blue-700 dark:text-blue-300 space-y-1">
-                  <li>The directory must contain a config.json file</li>
-                  <li>Optional: profiles.json for agent configurations</li>
-                  <li>Optional: custom_path.json for custom paths</li>
+                  <li>{t('setup.requirements.configJson')}</li>
+                  <li>{t('setup.requirements.profilesJson')}</li>
+                  <li>{t('setup.requirements.customPathJson')}</li>
                 </ul>
               </div>
 
               {/* Path Input */}
               <div className="space-y-2">
-                <Label htmlFor="config-path">Configuration Path</Label>
+                <Label htmlFor="config-path">{t('setup.configPath')}</Label>
                 <div className="flex gap-2">
                   <Input
                     id="config-path"
-                    placeholder="/path/to/config/directory"
+                    placeholder={t('setup.configPathPlaceholder')}
                     value={configPath}
                     onChange={(e) => {
                       setConfigPath(e.target.value);
@@ -290,12 +292,12 @@ export function FirstRunWizard() {
                     {configValid ? (
                       <>
                         <CheckCircle className="h-4 w-4 text-green-500" />
-                        <span className="text-green-600">Valid configuration directory</span>
+                        <span className="text-green-600">{t('setup.validDirectory')}</span>
                       </>
                     ) : (
                       <>
                         <XCircle className="h-4 w-4 text-red-500" />
-                        <span className="text-red-600">Invalid configuration directory</span>
+                        <span className="text-red-600">{t('setup.invalidDirectory')}</span>
                       </>
                     )}
                   </div>
@@ -310,7 +312,7 @@ export function FirstRunWizard() {
                   onCheckedChange={(checked) => setCopyExisting(checked as boolean)}
                 />
                 <label htmlFor="copy-existing-wizard" className="text-sm cursor-pointer">
-                  Copy default configurations to this location
+                  {t('setup.copyDefaultConfig')}
                 </label>
               </div>
 
@@ -321,7 +323,7 @@ export function FirstRunWizard() {
                   onClick={() => setCurrentStep('welcome')}
                   className="flex-1"
                 >
-                  Back
+                  {t('setup.buttons.back')}
                 </Button>
                 <Button
                   onClick={handleApplyConfig}
@@ -329,7 +331,7 @@ export function FirstRunWizard() {
                   className="flex-1"
                 >
                   <ArrowRight className="h-4 w-4 mr-2" />
-                  {switching ? 'Applying...' : 'Apply Configuration'}
+                  {switching ? t('setup.buttons.applying') : t('setup.buttons.applyConfiguration')}
                 </Button>
               </div>
             </CardContent>
@@ -341,26 +343,26 @@ export function FirstRunWizard() {
           <Card>
             <CardHeader className="text-center">
               <CheckCircle className="h-16 w-16 mx-auto mb-4 text-green-500" />
-              <CardTitle className="text-2xl">Setup Complete!</CardTitle>
+              <CardTitle className="text-2xl">{t('complete.title')}</CardTitle>
               <CardDescription>
                 {useDefault
-                  ? "Default configuration has been applied"
-                  : "Your configuration has been applied successfully"}
+                  ? t('complete.defaultDescription')
+                  : t('complete.customDescription')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="rounded-lg bg-green-50 dark:bg-green-950 p-4 text-sm">
-                <p className="font-medium text-green-800 dark:text-green-200 mb-2">What's Next:</p>
+                <p className="font-medium text-green-800 dark:text-green-200 mb-2">{t('complete.whatsNext.title')}</p>
                 <ul className="list-disc list-inside text-green-700 dark:text-green-300 space-y-1">
-                  <li>Explore your projects and tasks</li>
-                  <li>Customize your settings in the Settings page</li>
-                  <li>Save sessions to keep track of your work</li>
-                  {!useDefault && <li>Configure repository paths for your projects</li>}
+                  <li>{t('complete.whatsNext.exploreProjects')}</li>
+                  <li>{t('complete.whatsNext.customizeSettings')}</li>
+                  <li>{t('complete.whatsNext.saveSessions')}</li>
+                  {!useDefault && <li>{t('complete.whatsNext.configureRepos')}</li>}
                 </ul>
               </div>
 
               <Button onClick={handleComplete} className="w-full" size="lg">
-                Get Started <ArrowRight className="h-4 w-4 ml-2" />
+                {t('complete.getStarted')} <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             </CardContent>
           </Card>

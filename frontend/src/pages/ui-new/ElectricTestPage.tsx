@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth, useUserOrganizations, useCurrentUser } from '@/hooks';
 import { useEntity } from '@/lib/electric/hooks';
 import type { SyncError } from '@/lib/electric/types';
@@ -75,6 +76,15 @@ function LoadingState({ message }: { message: string }) {
   );
 }
 
+function NoDataState() {
+  const { t } = useTranslation('electric');
+  return (
+    <div className="p-base bg-secondary border rounded-sm text-low">
+      {t('noData')}
+    </div>
+  );
+}
+
 function ErrorState({
   syncError,
   title,
@@ -84,6 +94,7 @@ function ErrorState({
   title: string;
   onRetry?: () => void;
 }) {
+  const { t } = useTranslation('electric');
   if (!syncError) return null;
   return (
     <div className="p-base bg-error/10 border border-error rounded-sm text-error">
@@ -97,7 +108,7 @@ function ErrorState({
           onClick={onRetry}
           className="mt-base px-base py-half bg-error text-on-brand rounded-sm"
         >
-          Retry
+          {t('retry')}
         </button>
       )}
     </div>
@@ -121,12 +132,10 @@ function DataTable<T extends Record<string, unknown>>({
   selectedId?: string;
   getRowId: (item: T) => string;
 }) {
+  const { t } = useTranslation('electric');
+
   if (data.length === 0) {
-    return (
-      <div className="p-base bg-secondary border rounded-sm text-low">
-        No data found.
-      </div>
-    );
+    return <NoDataState />;
   }
 
   return (
@@ -187,10 +196,11 @@ function MutationPanel({
   disabled?: boolean;
   children?: React.ReactNode;
 }) {
+  const { t } = useTranslation('electric');
   return (
     <div className="mt-base p-base bg-secondary rounded-sm space-y-base">
       <h4 className="text-sm font-medium text-normal">
-        Mutations (Optimistic)
+        {t('mutations.title')}
       </h4>
       {children}
       <div className="flex gap-base flex-wrap">
@@ -200,7 +210,7 @@ function MutationPanel({
             disabled={disabled}
             className="px-base py-half text-sm bg-success text-white rounded-sm hover:bg-success/80 disabled:bg-panel disabled:text-low disabled:cursor-not-allowed"
           >
-            Create
+            {t('mutations.create')}
           </button>
         )}
         {onUpdate && (
@@ -209,7 +219,7 @@ function MutationPanel({
             disabled={disabled || !selectedId}
             className="px-base py-half text-sm bg-brand text-on-brand rounded-sm hover:bg-brand-hover disabled:bg-panel disabled:text-low disabled:cursor-not-allowed"
           >
-            Update Selected
+            {t('mutations.updateSelected')}
           </button>
         )}
         {onDelete && (
@@ -218,12 +228,12 @@ function MutationPanel({
             disabled={disabled || !selectedId}
             className="px-base py-half text-sm bg-error text-white rounded-sm hover:bg-error/80 disabled:bg-panel disabled:text-low disabled:cursor-not-allowed"
           >
-            Delete Selected
+            {t('mutations.deleteSelected')}
           </button>
         )}
       </div>
       {selectedId && (
-        <p className="text-xs text-low">Selected: {truncateId(selectedId)}</p>
+        <p className="text-xs text-low">{t('mutations.selected')}: {truncateId(selectedId)}</p>
       )}
     </div>
   );
@@ -242,6 +252,7 @@ function ProjectsList({
   onSelectProject: (project: Project | null) => void;
   selectedProjectId: string | null;
 }) {
+  const { t } = useTranslation('electric');
   const { data, isLoading, error, retry, insert, update, remove } = useEntity(
     PROJECT_ENTITY,
     { organization_id: organizationId }
@@ -281,12 +292,12 @@ function ProjectsList({
   };
 
   if (error)
-    return <ErrorState syncError={error} title="Sync Error" onRetry={retry} />;
-  if (isLoading) return <LoadingState message="Loading projects..." />;
+    return <ErrorState syncError={error} title={t('syncError')} onRetry={retry} />;
+  if (isLoading) return <LoadingState message={t('loadingProjects')} />;
 
   return (
     <div>
-      <p className="text-sm text-low mb-base">{data.length} synced</p>
+      <p className="text-sm text-low mb-base">{data.length} {t('synced')}</p>
       <DataTable
         data={data}
         getRowId={(p) => p.id}
@@ -295,7 +306,7 @@ function ProjectsList({
         columns={[
           {
             key: 'name',
-            label: 'Name',
+            label: t('table.name'),
             render: (p) => (
               <div className="flex items-center gap-2">
                 <span
@@ -306,10 +317,10 @@ function ProjectsList({
               </div>
             ),
           },
-          { key: 'id', label: 'ID', render: (p) => truncateId(p.id) },
+          { key: 'id', label: t('table.id'), render: (p) => truncateId(p.id) },
           {
             key: 'updated_at',
-            label: 'Updated',
+            label: t('table.updated'),
             render: (p) => formatDate(p.updated_at),
           },
         ]}
@@ -324,17 +335,17 @@ function ProjectsList({
       >
         <div className="flex gap-base items-end flex-wrap">
           <div>
-            <label className="block text-xs text-low mb-half">Name</label>
+            <label className="block text-xs text-low mb-half">{t('table.name')}</label>
             <input
               type="text"
               value={newProjectName}
               onChange={(e) => setNewProjectName(e.target.value)}
-              placeholder="Project name"
+              placeholder={t('projectNamePlaceholder')}
               className="px-base py-half text-sm border rounded-sm bg-primary text-normal focus:outline-none focus:ring-1 focus:ring-brand"
             />
           </div>
           <div>
-            <label className="block text-xs text-low mb-half">Color</label>
+            <label className="block text-xs text-low mb-half">{t('table.color')}</label>
             <input
               type="color"
               value={newProjectColor}

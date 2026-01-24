@@ -1,6 +1,8 @@
 {
   "edit": "编辑",
   "delete": "删除",
+  "copied": "已复制！",
+  "copyAsMarkdown": "复制为Markdown",
   "format": {
     "strikethrough": "删除线",
     "inlineCode": "行内代码"

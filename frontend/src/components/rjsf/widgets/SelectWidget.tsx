@@ -1,4 +1,5 @@
 import { WidgetProps } from '@rjsf/utils';
+import { useTranslation } from 'react-i18next';
 import {
   Select,
   SelectContent,
@@ -8,6 +9,7 @@ import {
 } from '@/components/ui/select';
 
 export const SelectWidget = (props: WidgetProps) => {
+  const { t } = useTranslation('form');
   const {
     id,
     value,
@@ -46,7 +48,7 @@ export const SelectWidget = (props: WidgetProps) => {
   const isNullable = Array.isArray(schema.type) && schema.type.includes('null');
   const allOptions = isNullable
     ? [
-        { value: '__null__', label: 'Not specified' },
+        { value: '__null__', label: t('select.notSpecified') },
         ...selectOptions.filter((opt) => opt.value !== null),
       ]
     : selectOptions;
@@ -59,7 +61,7 @@ export const SelectWidget = (props: WidgetProps) => {
       disabled={disabled || readonly}
     >
       <SelectTrigger id={id}>
-        <SelectValue placeholder={placeholder || 'Select an option...'} />
+        <SelectValue placeholder={placeholder || t('select.placeholder')} />
       </SelectTrigger>
       <SelectContent>
         {allOptions.map((option) => (

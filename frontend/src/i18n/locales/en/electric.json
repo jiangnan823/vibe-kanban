@@ -2,6 +2,16 @@
   "syncError": "Sync Error",
   "loadingProjects": "Loading projects...",
   "synced": "synced",
+  "noData": "No data found.",
+  "retry": "Retry",
+  "projectNamePlaceholder": "Project name",
+  "mutations": {
+    "title": "Mutations (Optimistic)",
+    "create": "Create",
+    "updateSelected": "Update Selected",
+    "deleteSelected": "Delete Selected",
+    "selected": "Selected"
+  },
   "table": {
     "name": "Name",
     "id": "ID",
@@ -23,6 +33,7 @@
     "author": "Author",
     "emoji": "Emoji",
     "comment": "Comment",
-    "user": "User"
+    "user": "User",
+    "color": "Color"
   }
 }

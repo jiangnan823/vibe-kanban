@@ -1,4 +1,5 @@
 import { FieldProps } from '@rjsf/utils';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus, X } from 'lucide-react';
@@ -16,6 +17,7 @@ export function KeyValueField({
   readonly,
   registry,
 }: FieldProps<KeyValueData>) {
+  const { t } = useTranslation('form');
   const [newKey, setNewKey] = useState('');
   const [newValue, setNewValue] = useState('');
 
@@ -72,14 +74,14 @@ export function KeyValueField({
             value={key}
             disabled
             className="flex-1 font-mono text-sm"
-            aria-label="Environment variable key"
+            aria-label={t('keyValue.envKeyLabel')}
           />
           <Input
             value={value ?? ''}
             onChange={(e) => handleValueChange(key, e.target.value)}
             disabled={isDisabled}
             className="flex-1 font-mono text-sm"
-            placeholder="Value"
+            placeholder={t('keyValue.newEnvValuePlaceholder')}
             aria-label={`Value for ${key}`}
           />
           <Button
@@ -104,7 +106,7 @@ export function KeyValueField({
           disabled={isDisabled}
           placeholder="KEY"
           className="flex-1 font-mono text-sm"
-          aria-label="New environment variable key"
+          aria-label={t('keyValue.newEnvKeyPlaceholder')}
         />
         <Input
           value={newValue}
@@ -118,7 +120,7 @@ export function KeyValueField({
               handleAdd();
             }
           }}
-          aria-label="New environment variable value"
+          aria-label={t('keyValue.newEnvValuePlaceholder')}
         />
         <Button
           type="button"
@@ -127,7 +129,7 @@ export function KeyValueField({
           onClick={handleAdd}
           disabled={isDisabled || !newKey.trim()}
           className="h-8 w-8 p-0 shrink-0"
-          aria-label="Add environment variable"
+          aria-label={t('keyValue.addButton')}
         >
           <Plus className="w-4 h-4" />
         </Button>

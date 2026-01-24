@@ -2,6 +2,7 @@ import { Diff } from 'shared/types';
 import { DiffModeEnum, DiffView, SplitSide } from '@git-diff-view/react';
 import { generateDiffFile, type DiffFile } from '@git-diff-view/file';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useUserSystem } from '@/components/ConfigProvider';
 import { getHighLightLanguageFromPath } from '@/utils/extToLanguage';
 import { getActualTheme } from '@/utils/theme';
@@ -43,15 +44,15 @@ type Props = {
   selectedAttempt: Workspace | null;
 };
 
-function labelAndIcon(diff: Diff) {
+function labelAndIcon(diff: Diff, t: (key: string) => string) {
   const c = diff.change;
-  if (c === 'deleted') return { label: 'Deleted', Icon: Trash2 };
-  if (c === 'renamed') return { label: 'Renamed', Icon: ArrowLeftRight };
+  if (c === 'deleted') return { label: t('status.deleted'), Icon: Trash2 };
+  if (c === 'renamed') return { label: t('status.renamed'), Icon: ArrowLeftRight };
   if (c === 'added')
     return { label: undefined as string | undefined, Icon: FilePlus2 };
-  if (c === 'copied') return { label: 'Copied', Icon: Copy };
+  if (c === 'copied') return { label: t('status.copied'), Icon: Copy };
   if (c === 'permissionChange')
-    return { label: 'Permission Changed', Icon: Key };
+    return { label: t('status.permissionChanged'), Icon: Key };
   return { label: undefined as string | undefined, Icon: PencilLine };
 }
 
@@ -80,6 +81,7 @@ export default function DiffCard({
   onToggle,
   selectedAttempt,
 }: Props) {
+  const { t } = useTranslation('diff');
   const { config } = useUserSystem();
   const theme = getActualTheme(config?.theme);
   const { comments, drafts, setDraft } = useReview();
@@ -94,7 +96,7 @@ export default function DiffCard({
     getHighLightLanguageFromPath(oldName || newName || '') || 'plaintext';
   const newLang =
     getHighLightLanguageFromPath(newName || oldName || '') || 'plaintext';
-  const { label, Icon } = labelAndIcon(diff);
+  const { label, Icon } = labelAndIcon(diff, t);
   const isOmitted = !!diff.contentOmitted;
 
   // Build a diff from raw contents so the viewer can expand beyond hunks
@@ -273,7 +275,7 @@ export default function DiffCard({
             size="sm"
             onClick={onToggle}
             className="h-6 w-6 p-0 mr-2"
-            title={expanded ? 'Collapse' : 'Expand'}
+            title={expanded ? t('actions.collapse') : t('actions.expand')}
             aria-expanded={expanded}
           >
             {expanded ? (
@@ -292,7 +294,7 @@ export default function DiffCard({
             handleOpenInIDE();
           }}
           className="h-6 w-6 p-0 ml-2"
-          title="Open in IDE"
+          title={t('actions.openInIDE')}
           disabled={diff.change === 'deleted'}
         >
           <ExternalLink className="h-3 w-3" aria-hidden />
@@ -324,14 +326,14 @@ export default function DiffCard({
           style={{ color: 'hsl(var(--muted-foreground) / 0.9)' }}
         >
           {isOmitted
-            ? 'Content omitted due to file size. Open in editor to view.'
+            ? t('messages.contentOmitted')
             : isContentEqual
               ? diff.change === 'renamed'
-                ? 'File renamed with no content changes.'
+                ? t('messages.renamedNoChanges')
                 : diff.change === 'permissionChange'
-                  ? 'File permission changed.'
-                  : 'No content changes to display.'
-              : 'Failed to render diff for this file.'}
+                  ? t('messages.permissionChanged')
+                  : t('messages.noChanges')
+              : t('errors.renderFailed')}
         </div>
       )}
     </div>

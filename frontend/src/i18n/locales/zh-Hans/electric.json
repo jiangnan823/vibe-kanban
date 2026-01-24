@@ -2,6 +2,16 @@
   "syncError": "同步错误",
   "loadingProjects": "正在加载项目...",
   "synced": "已同步",
+  "noData": "未找到数据。",
+  "retry": "重试",
+  "projectNamePlaceholder": "项目名称",
+  "mutations": {
+    "title": "变更（乐观）",
+    "create": "创建",
+    "updateSelected": "更新已选",
+    "deleteSelected": "删除已选",
+    "selected": "已选"
+  },
   "table": {
     "name": "名称",
     "id": "ID",
@@ -23,6 +33,7 @@
     "author": "作者",
     "emoji": "表情符号",
     "comment": "评论",
-    "user": "用户"
+    "user": "用户",
+    "color": "颜色"
   }
 }

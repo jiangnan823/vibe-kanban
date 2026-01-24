@@ -19,7 +19,7 @@ interface TaskPanelProps {
 }
 
 const TaskPanel = ({ task }: TaskPanelProps) => {
-  const { t } = useTranslation('tasks');
+  const { t } = useTranslation(['tasks', 'task']);
   const navigate = useNavigateWithSearch();
   const { projectId } = useProject();
   const { config } = useUserSystem();
@@ -82,13 +82,13 @@ const TaskPanel = ({ task }: TaskPanelProps) => {
     {
       id: 'executor',
       header: '',
-      accessor: (attempt) => attempt.session?.executor || 'Base Agent',
+      accessor: (attempt) => attempt.session?.executor || t('baseAgent'),
       className: 'pr-4',
     },
     {
       id: 'branch',
       header: '',
-      accessor: (attempt) => attempt.branch || '—',
+      accessor: (attempt) => attempt.branch || t('noValue'),
       className: 'pr-4',
     },
     {
@@ -126,7 +126,7 @@ const TaskPanel = ({ task }: TaskPanelProps) => {
                   }
                 }}
                 isLoading={isParentLoading}
-                headerContent="Parent Attempt"
+                headerContent={t('parentAttempt')}
               />
             )}
 

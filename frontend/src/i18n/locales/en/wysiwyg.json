@@ -1,6 +1,8 @@
 {
   "edit": "Edit",
   "delete": "Delete",
+  "copied": "Copied!",
+  "copyAsMarkdown": "Copy as Markdown",
   "format": {
     "strikethrough": "Strikethrough",
     "inlineCode": "Inline Code"

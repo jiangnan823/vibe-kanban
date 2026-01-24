@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import {
   $getSelection,
@@ -48,6 +49,7 @@ function ToolbarButton({
 }
 
 export function ToolbarPlugin() {
+  const { t } = useTranslation('wysiwyg');
   const [editor] = useLexicalComposerContext();
   const portalContainer = usePortalContainer();
 
@@ -235,14 +237,14 @@ export function ToolbarPlugin() {
         onClick={() =>
           editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'strikethrough')
         }
-        title="Strikethrough"
+        title={t('format.strikethrough')}
       >
         <Strikethrough size={iconSize} />
       </ToolbarButton>
       <ToolbarButton
         active={isCode}
         onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'code')}
-        title="Inline Code"
+        title={t('format.inlineCode')}
       >
         <Code size={iconSize} />
       </ToolbarButton>

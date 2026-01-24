@@ -1,4 +1,5 @@
 import { useMemo, useState, useCallback, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
@@ -101,6 +102,7 @@ function WYSIWYGEditor({
   findMatchingDiffPath,
   onCodeClick,
 }: WysiwygProps) {
+  const { t } = useTranslation('wysiwyg');
   // Copy button state
   const [copied, setCopied] = useState(false);
   const handleCopy = useCallback(async () => {
@@ -294,8 +296,8 @@ function WYSIWYGEditor({
             {/* Copy button */}
             <Button
               type="button"
-              aria-label={copied ? 'Copied!' : 'Copy as Markdown'}
-              title={copied ? 'Copied!' : 'Copy as Markdown'}
+              aria-label={copied ? t('copied') : t('copyAsMarkdown')}
+              title={copied ? t('copied') : t('copyAsMarkdown')}
               variant="icon"
               size="icon"
               onClick={handleCopy}
@@ -311,8 +313,8 @@ function WYSIWYGEditor({
             {onEdit && (
               <Button
                 type="button"
-                aria-label="Edit"
-                title="Edit"
+                aria-label={t('edit')}
+                title={t('edit')}
                 variant="icon"
                 size="icon"
                 onClick={onEdit}
@@ -325,8 +327,8 @@ function WYSIWYGEditor({
             {onDelete && (
               <Button
                 type="button"
-                aria-label="Delete"
-                title="Delete"
+                aria-label={t('delete')}
+                title={t('delete')}
                 variant="icon"
                 size="icon"
                 onClick={onDelete}
