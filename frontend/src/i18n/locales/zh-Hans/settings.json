@@ -9,6 +9,8 @@
         "projectsDesc": "项目仓库和配置",
         "repos": "仓库",
         "reposDesc": "仓库脚本和配置",
+        "dataManagement": "数据管理",
+        "dataManagementDesc": "配置、会话和仓库路径管理",
         "agents": "代理",
         "agentsDesc": "编码代理配置",
         "mcp": "MCP 服务器",
@@ -306,6 +308,164 @@
           "errors": {
             "createFailed": "创建桌面快捷方式失败"
           }
+        }
+      },
+      "dataManagement": {
+        "title": "数据管理",
+        "description": "管理配置、会话和仓库路径",
+        "tabs": {
+          "config": "配置",
+          "sessions": "会话",
+          "repos": "仓库",
+          "importExport": "导入/导出"
+        },
+        "configSource": {
+          "currentConfig": {
+            "title": "当前配置源",
+            "description": "应用程序配置的存储位置"
+          },
+          "currentLocation": "当前位置",
+          "sessionDirectory": "会话目录",
+          "notConfigured": "未配置",
+          "configurationFiles": "配置文件",
+          "custom": "自定义",
+          "default": "默认",
+          "validateConfiguration": "验证配置",
+          "reloadConfig": "重新加载配置",
+          "reloading": "重新加载中...",
+          "openFolder": "打开文件夹",
+          "note": "注意：点击"重新加载配置"可在不重启应用的情况下应用配置更改。",
+          "switchSource": {
+            "title": "切换配置源",
+            "description": "更改为其他配置目录（例如用于多设备同步）"
+          },
+          "requirements": "要求：",
+          "requirementsList": [
+            "目录必须存在且包含 config.json 文件",
+            "可选：profiles.json 和 custom_path.json",
+            "选择将现有配置复制到新位置"
+          ],
+          "newConfigPath": "新配置路径",
+          "pathPlaceholder": "/path/to/config/directory",
+          "copyExisting": "将现有配置文件复制到新位置",
+          "switchSourceButton": "切换配置源",
+          "switching": "切换中...",
+          "important": "重要：",
+          "importantList": [
+            "切换后，应用程序将使用新位置的配置",
+            "点击"重新加载配置"以应用更改",
+            "确保新目录可访问且具有正确权限"
+          ]
+        },
+        "sessions": {
+          "sessionDirectory": {
+            "title": "会话目录",
+            "description": "任务会话保存为 Markdown 文件的位置"
+          },
+          "directoryPath": "目录路径",
+          "sessionFiles": "会话文件",
+          "totalSize": "总大小",
+          "latestSession": "最新会话",
+          "never": "从未",
+          "scanSessions": "扫描会话",
+          "openFolder": "打开文件夹",
+          "savedSessions": {
+            "title": "已保存的会话",
+            "description": "最近保存的任务会话"
+          },
+          "noSavedSessions": "未找到已保存的会话",
+          "unknown": "未知",
+          "untitled": "无标题",
+          "view": "查看",
+          "scanRepositories": "扫描仓库"
+        },
+        "repos": {
+          "title": "仓库路径验证",
+          "description": "检查并修复无效的仓库路径以实现跨设备使用",
+          "scanningRepositories": "扫描仓库中...",
+          "scanningProgress": "{{progress}}%",
+          "scanRepositories": "扫描仓库",
+          "fixAll": "修复全部 ({{count}})",
+          "foundRepos": "找到 {{count}} 个仓库（{{invalid}} 个无效）",
+          "clickScan": "点击"扫描仓库"以检查仓库路径",
+          "valid": "有效",
+          "invalid": "无效",
+          "fixPath": "修复路径",
+          "enterNewPath": "输入仓库 \"{{name}}\" 的新路径：",
+          "noInvalidRepos": "未发现无效仓库",
+          "foundInvalidRepos": "发现 {{count}} 个无效仓库。请逐个修复。"
+        },
+        "importExport": {
+          "exportConfig": {
+            "title": "导出配置",
+            "description": "将您的应用配置下载为 JSON 文件",
+            "includeInExport": "导出包含：",
+            "applicationConfig": "应用配置 (config.json)",
+            "agentProfiles": "代理配置 (profiles.json)",
+            "projectMetadata": "项目元数据（不含路径）",
+            "taskTags": "任务标签",
+            "exportButton": "导出配置",
+            "exporting": "导出中..."
+          },
+          "exportSessions": {
+            "title": "导出会话",
+            "description": "将所有会话文件下载为 ZIP 压缩包",
+            "organizedAs": "会话将按以下方式组织：",
+            "exportAllButton": "导出所有会话",
+            "exporting": "导出中..."
+          },
+          "importConfig": {
+            "title": "导入配置",
+            "description": "导入之前导出的配置文件",
+            "importOptions": "导入选项：",
+            "skipExisting": "跳过现有项目（不覆盖）",
+            "overwriteConfig": "覆盖配置文件",
+            "note": "注意：",
+            "noteList": [
+              "导入将与现有配置合并",
+              "敏感数据（凭据）不包含在内",
+              "跨设备使用时需要调整路径",
+              "可能需要重启应用程序"
+            ],
+            "importButton": "导入配置",
+            "importing": "导入中...",
+            "importResult": "导入结果：",
+            "imported": "已导入 ({{count}})：",
+            "skipped": "已跳过 ({{count}})：",
+            "errors": "错误 ({{count}})：",
+            "andMore": "...还有 {{count}} 个"
+          }
+        },
+        "toasts": {
+          "failedToLoadConfig": "加载配置信息失败",
+          "configurationValid": "配置有效",
+          "configurationIssues": "配置问题：{{issues}}",
+          "validationFailed": "验证失败",
+          "reloadedSuccessfully": "配置重新加载成功",
+          "reloadFailed": "重新加载配置失败",
+          "enterConfigPath": "请输入配置路径",
+          "switchedSuccessfully": "配置源切换成功",
+          "switchFailed": "切换配置源失败",
+          "selectFolderFailed": "选择文件夹失败",
+          "failedToLoadSession": "加载会话数据失败",
+          "scanCompleted": "扫描完成",
+          "failedToScan": "扫描会话失败",
+          "failedToOpenSession": "打开会话失败",
+          "deleteConfirm": "删除会话 \"{{name}}\"？",
+          "sessionDeleted": "会话已删除",
+          "failedToDelete": "删除会话失败",
+          "failedToScanRepos": "扫描仓库失败",
+          "pathUpdated": "仓库路径已更新",
+          "updateFailed": "更新路径失败",
+          "failedToFixPath": "修复仓库路径失败",
+          "exportedSuccessfully": "配置导出成功",
+          "exportFailed": "导出配置失败",
+          "sessionsExportedSuccessfully": "会话导出成功",
+          "importedSuccessfully": "配置导入成功。请重启应用程序。",
+          "importFailed": "导入配置失败"
+        },
+        "errors": {
+          "loading": "加载中..."
         }
       }
     },

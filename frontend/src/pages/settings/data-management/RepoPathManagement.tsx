@@ -34,7 +34,7 @@ export function RepoPathManagement() {
       setRepos(data.data.results);
       setProgress(100);
     } catch (error) {
-      toast.error('Failed to scan repositories');
+      toast.error(t('settings.general.dataManagement.toasts.failedToScanRepos'));
       console.error(error);
     } finally {
       setScanning(false);
@@ -44,7 +44,7 @@ export function RepoPathManagement() {
   const handleFixPath = async (repo: RepoValidationInfo) => {
     // For now, just show an alert. In a real implementation, this would open a file picker
     const newPath = prompt(
-      `Enter the new path for repository "${repo.repo_name}":`,
+      t('settings.general.dataManagement.repos.enterNewPath', { name: repo.repo_name }),
       repo.path
     );
 
@@ -60,13 +60,13 @@ export function RepoPathManagement() {
       const data = await response.json();
 
       if (data.data.success) {
-        toast.success('Repository path updated successfully');
+        toast.success(t('settings.general.dataManagement.toasts.pathUpdated'));
         await handleScan();
       } else {
-        toast.error(data.data.message || 'Failed to update path');
+        toast.error(data.data.message || t('settings.general.dataManagement.toasts.updateFailed'));
       }
     } catch (error) {
-      toast.error('Failed to fix repository path');
+      toast.error(t('settings.general.dataManagement.toasts.failedToFixPath'));
       console.error(error);
     }
   };
@@ -74,11 +74,11 @@ export function RepoPathManagement() {
   const handleBatchFix = () => {
     const invalidRepos = repos.filter((r) => !r.valid);
     if (invalidRepos.length === 0) {
-      toast.info('No invalid repositories found');
+      toast.info(t('settings.general.dataManagement.repos.noInvalidRepos'));
       return;
     }
 
-    toast.info(`Found ${invalidRepos.length} invalid repositories. Please fix them individually.`);
+    toast.info(t('settings.general.dataManagement.repos.foundInvalidRepos', { count: invalidRepos.length }));
   };
 
   const invalidCount = repos.filter((r) => !r.valid).length;
@@ -86,9 +86,9 @@ export function RepoPathManagement() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Repository Path Validation</CardTitle>
+        <CardTitle>{t('settings.general.dataManagement.repos.title')}</CardTitle>
         <CardDescription>
-          Check and fix invalid repository paths for cross-device usage
+          {t('settings.general.dataManagement.repos.description')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -96,7 +96,7 @@ export function RepoPathManagement() {
         {scanning && (
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
-              <span>Scanning repositories...</span>
+              <span>{t('settings.general.dataManagement.repos.scanningRepositories')}</span>
               <span>{progress}%</span>
             </div>
             <Progress value={progress} />
@@ -107,11 +107,11 @@ export function RepoPathManagement() {
         <div className="flex flex-wrap gap-2">
           <Button onClick={handleScan} disabled={scanning}>
             <RefreshCw className={`h-4 w-4 mr-2 ${scanning ? 'animate-spin' : ''}`} />
-            Scan Repositories
+            {t('settings.general.dataManagement.repos.scanRepositories')}
           </Button>
           {invalidCount > 0 && (
             <Button variant="outline" onClick={handleBatchFix}>
-              Fix All ({invalidCount})
+              {t('settings.general.dataManagement.repos.fixAll', { count: invalidCount })}
             </Button>
           )}
         </div>
@@ -120,7 +120,7 @@ export function RepoPathManagement() {
         {repos.length > 0 && (
           <div className="space-y-2">
             <div className="text-sm font-medium">
-              Found {repos.length} repositories ({invalidCount} invalid)
+              {t('settings.general.dataManagement.repos.foundRepos', { count: repos.length, invalid: invalidCount })}
             </div>
             <div className="space-y-2">
               {repos.map((repo) => (
@@ -140,7 +140,7 @@ export function RepoPathManagement() {
                         )}
                         <span className="font-medium">{repo.repo_name}</span>
                         <Badge variant={repo.valid ? 'default' : 'destructive'}>
-                          {repo.valid ? 'Valid' : 'Invalid'}
+                          {repo.valid ? t('settings.general.dataManagement.repos.valid') : t('settings.general.dataManagement.repos.invalid')}
                         </Badge>
                       </div>
                       <div className="text-sm text-muted-foreground mt-1 font-mono">
@@ -154,7 +154,7 @@ export function RepoPathManagement() {
                     </div>
                     {!repo.valid && (
                       <Button variant="outline" size="sm" onClick={() => handleFixPath(repo)}>
-                        Fix Path
+                        {t('settings.general.dataManagement.repos.fixPath')}
                       </Button>
                     )}
                   </div>
@@ -168,7 +168,7 @@ export function RepoPathManagement() {
         {repos.length === 0 && !scanning && (
           <div className="text-center py-8 text-muted-foreground">
             <FolderOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>Click "Scan Repositories" to check repository paths</p>
+            <p>{t('settings.general.dataManagement.repos.clickScan')}</p>
           </div>
         )}
       </CardContent>

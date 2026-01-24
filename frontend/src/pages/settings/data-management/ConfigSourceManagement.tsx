@@ -29,7 +29,7 @@ export function ConfigSourceManagement() {
       const info = await dataStorageApi.getPathConfig();
       setConfigInfo(info);
     } catch (error) {
-      toast.error('Failed to load configuration info');
+      toast.error(t('settings.general.dataManagement.toasts.failedToLoadConfig'));
       console.error(error);
     }
   };
@@ -46,12 +46,12 @@ export function ConfigSourceManagement() {
       }).then((res) => res.json());
 
       if (result.data.valid) {
-        toast.success('Configuration is valid');
+        toast.success(t('settings.general.dataManagement.toasts.configurationValid'));
       } else {
-        toast.error(`Configuration issues: ${result.data.issues.join(', ')}`);
+        toast.error(t('settings.general.dataManagement.toasts.configurationIssues', { issues: result.data.issues.join(', ') }));
       }
     } catch (error) {
-      toast.error('Validation failed');
+      toast.error(t('settings.general.dataManagement.toasts.validationFailed'));
       console.error(error);
     } finally {
       setValidating(false);
@@ -66,13 +66,13 @@ export function ConfigSourceManagement() {
       }).then((res) => res.json());
 
       if (result.success) {
-        toast.success(result.data.message || 'Configuration reloaded successfully');
+        toast.success(result.data.message || t('settings.general.dataManagement.toasts.reloadedSuccessfully'));
         await loadConfigInfo(); // Refresh config info
       } else {
-        toast.error(result.message || 'Failed to reload configuration');
+        toast.error(result.message || t('settings.general.dataManagement.toasts.reloadFailed'));
       }
     } catch (error) {
-      toast.error('Failed to reload configuration');
+      toast.error(t('settings.general.dataManagement.toasts.reloadFailed'));
       console.error(error);
     } finally {
       setReloading(false);
@@ -81,7 +81,7 @@ export function ConfigSourceManagement() {
 
   const handleSwitchSource = async () => {
     if (!newConfigPath.trim()) {
-      toast.error('Please enter a configuration path');
+      toast.error(t('settings.general.dataManagement.toasts.enterConfigPath'));
       return;
     }
 
@@ -97,14 +97,14 @@ export function ConfigSourceManagement() {
       }).then((res) => res.json());
 
       if (result.success) {
-        toast.success(result.data.message || 'Configuration source switched successfully');
+        toast.success(result.data.message || t('settings.general.dataManagement.toasts.switchedSuccessfully'));
         setNewConfigPath('');
         await loadConfigInfo(); // Refresh config info
       } else {
-        toast.error(result.message || 'Failed to switch configuration source');
+        toast.error(result.message || t('settings.general.dataManagement.toasts.switchFailed'));
       }
     } catch (error) {
-      toast.error('Failed to switch configuration source');
+      toast.error(t('settings.general.dataManagement.toasts.switchFailed'));
       console.error(error);
     } finally {
       setSwitching(false);
@@ -127,12 +127,12 @@ export function ConfigSourceManagement() {
           setNewConfigPath(path);
         }
       } catch (error) {
-        toast.error('Failed to select folder');
+        toast.error(t('settings.general.dataManagement.toasts.selectFolderFailed'));
         console.error(error);
       }
     } else {
       // Fallback: prompt user to enter path manually
-      const path = prompt('Enter the full path to the configuration directory:');
+      const path = prompt(t('settings.general.dataManagement.configSource.newConfigPath') + ':');
       if (path) {
         setNewConfigPath(path);
       }
@@ -143,7 +143,7 @@ export function ConfigSourceManagement() {
     return (
       <Card>
         <CardContent className="p-6">
-          <div className="text-center text-muted-foreground">Loading...</div>
+          <div className="text-center text-muted-foreground">{t('settings.general.dataManagement.errors.loading')}</div>
         </CardContent>
       </Card>
     );
@@ -159,38 +159,38 @@ export function ConfigSourceManagement() {
       {/* Current Configuration */}
       <Card>
         <CardHeader>
-          <CardTitle>Current Configuration Source</CardTitle>
+          <CardTitle>{t('settings.general.dataManagement.configSource.currentConfig.title')}</CardTitle>
           <CardDescription>
-            Location where application configurations are stored
+            {t('settings.general.dataManagement.configSource.currentConfig.description')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Current Path */}
           <div className="space-y-2">
-            <Label>Current Location</Label>
+            <Label>{t('settings.general.dataManagement.configSource.currentLocation')}</Label>
             <div className="flex items-center gap-2">
               <code className="flex-1 px-3 py-2 bg-muted rounded-md text-sm">
                 {configInfo.current_path}
               </code>
               <Badge variant={configInfo.is_custom ? 'default' : 'secondary'}>
-                {configInfo.is_custom ? 'Custom' : 'Default'}
+                {configInfo.is_custom ? t('settings.general.dataManagement.configSource.custom') : t('settings.general.dataManagement.configSource.default')}
               </Badge>
             </div>
           </div>
 
           {/* Session Directory */}
           <div className="space-y-2">
-            <Label>Session Directory</Label>
+            <Label>{t('settings.general.dataManagement.configSource.sessionDirectory')}</Label>
             <div className="flex items-center gap-2">
               <code className="flex-1 px-3 py-2 bg-muted rounded-md text-sm">
-                {configInfo.session_save_dir || 'Not configured'}
+                {configInfo.session_save_dir || t('settings.general.dataManagement.configSource.notConfigured')}
               </code>
             </div>
           </div>
 
           {/* Files Status */}
           <div className="space-y-2">
-            <Label>Configuration Files</Label>
+            <Label>{t('settings.general.dataManagement.configSource.configurationFiles')}</Label>
             <div className="space-y-2">
               {['config.json', 'profiles.json', 'custom_path.json'].map((file) => {
                 const exists = getFileStatus(file);
@@ -216,7 +216,7 @@ export function ConfigSourceManagement() {
               disabled={validating}
             >
               <RefreshCw className={`h-4 w-4 mr-2 ${validating ? 'animate-spin' : ''}`} />
-              Validate Configuration
+              {t('settings.general.dataManagement.configSource.validateConfiguration')}
             </Button>
             <Button
               variant="outline"
@@ -224,18 +224,18 @@ export function ConfigSourceManagement() {
               disabled={reloading}
             >
               <RefreshCw className={`h-4 w-4 mr-2 ${reloading ? 'animate-spin' : ''}`} />
-              {reloading ? 'Reloading...' : 'Reload Config'}
+              {reloading ? t('settings.general.dataManagement.configSource.reloading') : t('settings.general.dataManagement.configSource.reloadConfig')}
             </Button>
             <Button variant="outline" onClick={handleOpenFolder}>
               <FolderOpen className="h-4 w-4 mr-2" />
-              Open Folder
+              {t('settings.general.dataManagement.configSource.openFolder')}
             </Button>
           </div>
 
           {/* Info */}
           <div className="rounded-lg bg-muted p-4 text-sm">
             <p className="text-muted-foreground">
-              <strong>Note:</strong> Click "Reload Config" to apply configuration changes without restarting the application.
+              <strong>{t('settings.general.dataManagement.configSource.note').split('：')[0]}:</strong> {t('settings.general.dataManagement.configSource.note').split('：')[1]}
             </p>
           </div>
         </CardContent>
@@ -244,28 +244,28 @@ export function ConfigSourceManagement() {
       {/* Switch Configuration Source */}
       <Card>
         <CardHeader>
-          <CardTitle>Switch Configuration Source</CardTitle>
+          <CardTitle>{t('settings.general.dataManagement.configSource.switchSource.title')}</CardTitle>
           <CardDescription>
-            Change to a different configuration directory (e.g., for multi-device sync)
+            {t('settings.general.dataManagement.configSource.switchSource.description')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="rounded-lg bg-muted p-4 text-sm space-y-2">
-            <p className="font-medium">Requirements:</p>
+            <p className="font-medium">{t('settings.general.dataManagement.configSource.requirements')}</p>
             <ul className="list-disc list-inside text-muted-foreground space-y-1">
-              <li>The directory must exist and contain a config.json file</li>
-              <li>Optional: profiles.json and custom_path.json</li>
-              <li>Choose to copy existing configurations to the new location</li>
+              {t('settings.general.dataManagement.configSource.requirementsList', { returnObjects: true }).map((item: string, i: number) => (
+                <li key={i}>{item}</li>
+              ))}
             </ul>
           </div>
 
           {/* Path Input */}
           <div className="space-y-2">
-            <Label htmlFor="new-config-path">New Configuration Path</Label>
+            <Label htmlFor="new-config-path">{t('settings.general.dataManagement.configSource.newConfigPath')}</Label>
             <div className="flex gap-2">
               <Input
                 id="new-config-path"
-                placeholder="/path/to/config/directory"
+                placeholder={t('settings.general.dataManagement.configSource.pathPlaceholder')}
                 value={newConfigPath}
                 onChange={(e) => setNewConfigPath(e.target.value)}
                 className="flex-1"
@@ -284,7 +284,7 @@ export function ConfigSourceManagement() {
               onCheckedChange={(checked) => setCopyExisting(checked as boolean)}
             />
             <label htmlFor="copy-existing" className="text-sm cursor-pointer">
-              Copy existing configuration files to new location
+              {t('settings.general.dataManagement.configSource.copyExisting')}
             </label>
           </div>
 
@@ -295,16 +295,16 @@ export function ConfigSourceManagement() {
             className="w-full"
           >
             <ArrowRight className="h-4 w-4 mr-2" />
-            {switching ? 'Switching...' : 'Switch Configuration Source'}
+            {switching ? t('settings.general.dataManagement.configSource.switching') : t('settings.general.dataManagement.configSource.switchSourceButton')}
           </Button>
 
           {/* Warning */}
           <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-sm dark:border-yellow-800 dark:bg-yellow-950">
-            <p className="font-medium text-yellow-800 dark:text-yellow-200">Important:</p>
+            <p className="font-medium text-yellow-800 dark:text-yellow-200">{t('settings.general.dataManagement.configSource.important')}</p>
             <ul className="list-disc list-inside text-yellow-700 dark:text-yellow-300 mt-2 space-y-1">
-              <li>After switching, the application will use configurations from the new location</li>
-              <li>Click "Reload Config" to apply the changes</li>
-              <li>Make sure the new directory is accessible and has proper permissions</li>
+              {t('settings.general.dataManagement.configSource.importantList', { returnObjects: true }).map((item: string, i: number) => (
+                <li key={i}>{item}</li>
+              ))}
             </ul>
           </div>
         </CardContent>

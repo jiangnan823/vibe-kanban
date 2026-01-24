@@ -18,9 +18,9 @@ export function DataManagement() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">Data Management</h2>
+        <h2 className="text-3xl font-bold tracking-tight">{t('settings.general.dataManagement.title')}</h2>
         <p className="text-muted-foreground mt-2">
-          Manage configuration, sessions, and repository paths
+          {t('settings.general.dataManagement.description')}
         </p>
       </div>
 
@@ -28,19 +28,19 @@ export function DataManagement() {
         <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
           <TabsTrigger value="config" className="flex items-center gap-2">
             <Database className="h-4 w-4" />
-            <span className="hidden sm:inline">Config</span>
+            <span className="hidden sm:inline">{t('settings.general.dataManagement.tabs.config')}</span>
           </TabsTrigger>
           <TabsTrigger value="sessions" className="flex items-center gap-2">
             <FolderOpen className="h-4 w-4" />
-            <span className="hidden sm:inline">Sessions</span>
+            <span className="hidden sm:inline">{t('settings.general.dataManagement.tabs.sessions')}</span>
           </TabsTrigger>
           <TabsTrigger value="repos" className="flex items-center gap-2">
             <GitBranch className="h-4 w-4" />
-            <span className="hidden sm:inline">Repos</span>
+            <span className="hidden sm:inline">{t('settings.general.dataManagement.tabs.repos')}</span>
           </TabsTrigger>
           <TabsTrigger value="import-export" className="flex items-center gap-2">
             <Download className="h-4 w-4" />
-            <span className="hidden sm:inline">Import/Export</span>
+            <span className="hidden sm:inline">{t('settings.general.dataManagement.tabs.importExport')}</span>
           </TabsTrigger>
         </TabsList>
 
