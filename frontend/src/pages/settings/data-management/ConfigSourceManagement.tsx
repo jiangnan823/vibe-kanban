@@ -1,13 +1,26 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
-import { FolderOpen, CheckCircle, XCircle, RefreshCw, FolderOpen as FolderOpenIcon, ArrowRight } from 'lucide-react';
+import {
+  FolderOpen,
+  CheckCircle,
+  XCircle,
+  RefreshCw,
+  FolderOpen as FolderOpenIcon,
+  ArrowRight,
+} from 'lucide-react';
 import { dataStorageApi } from '@/lib/api';
 import { useFilePicker } from '@/hooks';
 import { normalizePath } from '@/lib/pathUtils';
@@ -38,6 +51,8 @@ export function ConfigSourceManagement() {
 
   useEffect(() => {
     loadConfigInfo();
+    // Only run on mount - loadConfigInfo is defined locally
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadConfigInfo = async () => {
@@ -49,10 +64,12 @@ export function ConfigSourceManagement() {
         custom_path: info.custom_path || undefined,
         session_save_dir: info.session_save_dir || undefined,
         is_custom: info.is_custom,
-        files: []
+        files: [],
       });
     } catch (error) {
-      toast.error(t('settings.general.dataManagement.toasts.failedToLoadConfig'));
+      toast.error(
+        t('settings.general.dataManagement.toasts.failedToLoadConfig')
+      );
       console.error(error);
     }
   };
@@ -62,16 +79,27 @@ export function ConfigSourceManagement() {
 
     setValidating(true);
     try {
-      const result = await fetch('/api/data-management/config-source/validate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path: configInfo.custom_path || configInfo.current_path }),
-      }).then((res) => res.json());
+      const result = await fetch(
+        '/api/data-management/config-source/validate',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            path: configInfo.custom_path || configInfo.current_path,
+          }),
+        }
+      ).then((res) => res.json());
 
       if (result.data.valid) {
-        toast.success(t('settings.general.dataManagement.toasts.configurationValid'));
+        toast.success(
+          t('settings.general.dataManagement.toasts.configurationValid')
+        );
       } else {
-        toast.error(t('settings.general.dataManagement.toasts.configurationIssues', { issues: result.data.issues.join(', ') }));
+        toast.error(
+          t('settings.general.dataManagement.toasts.configurationIssues', {
+            issues: result.data.issues.join(', '),
+          })
+        );
       }
     } catch (error) {
       toast.error(t('settings.general.dataManagement.toasts.validationFailed'));
@@ -89,10 +117,16 @@ export function ConfigSourceManagement() {
       }).then((res) => res.json());
 
       if (result.success) {
-        toast.success(result.data.message || t('settings.general.dataManagement.toasts.reloadedSuccessfully'));
+        toast.success(
+          result.data.message ||
+            t('settings.general.dataManagement.toasts.reloadedSuccessfully')
+        );
         await loadConfigInfo(); // Refresh config info
       } else {
-        toast.error(result.message || t('settings.general.dataManagement.toasts.reloadFailed'));
+        toast.error(
+          result.message ||
+            t('settings.general.dataManagement.toasts.reloadFailed')
+        );
       }
     } catch (error) {
       toast.error(t('settings.general.dataManagement.toasts.reloadFailed'));
@@ -120,11 +154,17 @@ export function ConfigSourceManagement() {
       }).then((res) => res.json());
 
       if (result.success) {
-        toast.success(result.data.message || t('settings.general.dataManagement.toasts.switchedSuccessfully'));
+        toast.success(
+          result.data.message ||
+            t('settings.general.dataManagement.toasts.switchedSuccessfully')
+        );
         setNewConfigPath('');
         await loadConfigInfo(); // Refresh config info
       } else {
-        toast.error(result.message || t('settings.general.dataManagement.toasts.switchFailed'));
+        toast.error(
+          result.message ||
+            t('settings.general.dataManagement.toasts.switchFailed')
+        );
       }
     } catch (error) {
       toast.error(t('settings.general.dataManagement.toasts.switchFailed'));
@@ -143,7 +183,9 @@ export function ConfigSourceManagement() {
 
   const handleSelectFolder = async () => {
     // Use file picker to select configuration directory
-    const path = await pickFolder(t('settings.general.dataManagement.configSource.selectConfigDir'));
+    const path = await pickFolder(
+      t('settings.general.dataManagement.configSource.selectConfigDir')
+    );
 
     if (path) {
       // Normalize path for cross-platform compatibility
@@ -155,7 +197,9 @@ export function ConfigSourceManagement() {
     return (
       <Card>
         <CardContent className="p-6">
-          <div className="text-center text-muted-foreground">{t('settings.general.dataManagement.errors.loading')}</div>
+          <div className="text-center text-muted-foreground">
+            {t('settings.general.dataManagement.errors.loading')}
+          </div>
         </CardContent>
       </Card>
     );
@@ -163,7 +207,9 @@ export function ConfigSourceManagement() {
 
   const getFileStatus = (fileName: string) => {
     if (!configInfo.files) return false;
-    const file = configInfo.files.find((f: any) => f.name === fileName);
+    const file = configInfo.files.find(
+      (f: ConfigFileInfo) => f.name === fileName
+    );
     return file?.exists ?? false;
   };
 
@@ -172,31 +218,50 @@ export function ConfigSourceManagement() {
       {/* Current Configuration */}
       <Card>
         <CardHeader>
-          <CardTitle>{t('settings.general.dataManagement.configSource.currentConfig.title')}</CardTitle>
+          <CardTitle>
+            {t(
+              'settings.general.dataManagement.configSource.currentConfig.title'
+            )}
+          </CardTitle>
           <CardDescription>
-            {t('settings.general.dataManagement.configSource.currentConfig.description')}
+            {t(
+              'settings.general.dataManagement.configSource.currentConfig.description'
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Current Path */}
           <div className="space-y-2">
-            <Label>{t('settings.general.dataManagement.configSource.currentLocation')}</Label>
+            <Label>
+              {t(
+                'settings.general.dataManagement.configSource.currentLocation'
+              )}
+            </Label>
             <div className="flex items-center gap-2">
               <code className="flex-1 px-3 py-2 bg-muted rounded-md text-sm">
                 {configInfo.current_path}
               </code>
               <Badge variant={configInfo.is_custom ? 'default' : 'secondary'}>
-                {configInfo.is_custom ? t('settings.general.dataManagement.configSource.custom') : t('settings.general.dataManagement.configSource.default')}
+                {configInfo.is_custom
+                  ? t('settings.general.dataManagement.configSource.custom')
+                  : t('settings.general.dataManagement.configSource.default')}
               </Badge>
             </div>
           </div>
 
           {/* Session Directory */}
           <div className="space-y-2">
-            <Label>{t('settings.general.dataManagement.configSource.sessionDirectory')}</Label>
+            <Label>
+              {t(
+                'settings.general.dataManagement.configSource.sessionDirectory'
+              )}
+            </Label>
             <div className="flex items-center gap-2">
               <code className="flex-1 px-3 py-2 bg-muted rounded-md text-sm">
-                {configInfo.session_save_dir || t('settings.general.dataManagement.configSource.notConfigured')}
+                {configInfo.session_save_dir ||
+                  t(
+                    'settings.general.dataManagement.configSource.notConfigured'
+                  )}
               </code>
             </div>
           </div>
@@ -204,21 +269,30 @@ export function ConfigSourceManagement() {
           {/* Files Status */}
           {configInfo.files && (
             <div className="space-y-2">
-              <Label>{t('settings.general.dataManagement.configSource.configurationFiles')}</Label>
+              <Label>
+                {t(
+                  'settings.general.dataManagement.configSource.configurationFiles'
+                )}
+              </Label>
               <div className="space-y-2">
-                {['config.json', 'profiles.json', 'custom_path.json'].map((file) => {
-                  const exists = getFileStatus(file);
-                  return (
-                    <div key={file} className="flex items-center gap-2 text-sm">
-                      {exists ? (
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                      ) : (
-                        <XCircle className="h-4 w-4 text-red-500" />
-                      )}
-                      <span>{file}</span>
-                    </div>
-                  );
-                })}
+                {['config.json', 'profiles.json', 'custom_path.json'].map(
+                  (file) => {
+                    const exists = getFileStatus(file);
+                    return (
+                      <div
+                        key={file}
+                        className="flex items-center gap-2 text-sm"
+                      >
+                        {exists ? (
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                        ) : (
+                          <XCircle className="h-4 w-4 text-red-500" />
+                        )}
+                        <span>{file}</span>
+                      </div>
+                    );
+                  }
+                )}
               </div>
             </div>
           )}
@@ -230,16 +304,26 @@ export function ConfigSourceManagement() {
               onClick={handleValidate}
               disabled={validating}
             >
-              <RefreshCw className={`h-4 w-4 mr-2 ${validating ? 'animate-spin' : ''}`} />
-              {t('settings.general.dataManagement.configSource.validateConfiguration')}
+              <RefreshCw
+                className={`h-4 w-4 mr-2 ${validating ? 'animate-spin' : ''}`}
+              />
+              {t(
+                'settings.general.dataManagement.configSource.validateConfiguration'
+              )}
             </Button>
             <Button
               variant="outline"
               onClick={handleReload}
               disabled={reloading}
             >
-              <RefreshCw className={`h-4 w-4 mr-2 ${reloading ? 'animate-spin' : ''}`} />
-              {reloading ? t('settings.general.dataManagement.configSource.reloading') : t('settings.general.dataManagement.configSource.reloadConfig')}
+              <RefreshCw
+                className={`h-4 w-4 mr-2 ${reloading ? 'animate-spin' : ''}`}
+              />
+              {reloading
+                ? t('settings.general.dataManagement.configSource.reloading')
+                : t(
+                    'settings.general.dataManagement.configSource.reloadConfig'
+                  )}
             </Button>
             <Button variant="outline" onClick={handleOpenFolder}>
               <FolderOpen className="h-4 w-4 mr-2" />
@@ -250,7 +334,19 @@ export function ConfigSourceManagement() {
           {/* Info */}
           <div className="rounded-lg bg-muted p-4 text-sm">
             <p className="text-muted-foreground">
-              <strong>{t('settings.general.dataManagement.configSource.note').split('：')[0]}:</strong> {t('settings.general.dataManagement.configSource.note').split('：')[1]}
+              <strong>
+                {
+                  t('settings.general.dataManagement.configSource.note').split(
+                    '：'
+                  )[0]
+                }
+                :
+              </strong>{' '}
+              {
+                t('settings.general.dataManagement.configSource.note').split(
+                  '：'
+                )[1]
+              }
             </p>
           </div>
         </CardContent>
@@ -259,16 +355,29 @@ export function ConfigSourceManagement() {
       {/* Switch Configuration Source */}
       <Card>
         <CardHeader>
-          <CardTitle>{t('settings.general.dataManagement.configSource.switchSource.title')}</CardTitle>
+          <CardTitle>
+            {t(
+              'settings.general.dataManagement.configSource.switchSource.title'
+            )}
+          </CardTitle>
           <CardDescription>
-            {t('settings.general.dataManagement.configSource.switchSource.description')}
+            {t(
+              'settings.general.dataManagement.configSource.switchSource.description'
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="rounded-lg bg-muted p-4 text-sm space-y-2">
-            <p className="font-medium">{t('settings.general.dataManagement.configSource.requirements')}</p>
+            <p className="font-medium">
+              {t('settings.general.dataManagement.configSource.requirements')}
+            </p>
             <ul className="list-disc list-inside text-muted-foreground space-y-1">
-              {(t('settings.general.dataManagement.configSource.requirementsList', { returnObjects: true }) as string[]).map((item: string, i: number) => (
+              {(
+                t(
+                  'settings.general.dataManagement.configSource.requirementsList',
+                  { returnObjects: true }
+                ) as string[]
+              ).map((item: string, i: number) => (
                 <li key={i}>{item}</li>
               ))}
             </ul>
@@ -276,11 +385,15 @@ export function ConfigSourceManagement() {
 
           {/* Path Input */}
           <div className="space-y-2">
-            <Label htmlFor="new-config-path">{t('settings.general.dataManagement.configSource.newConfigPath')}</Label>
+            <Label htmlFor="new-config-path">
+              {t('settings.general.dataManagement.configSource.newConfigPath')}
+            </Label>
             <div className="flex gap-2">
               <Input
                 id="new-config-path"
-                placeholder={t('settings.general.dataManagement.configSource.pathPlaceholder')}
+                placeholder={t(
+                  'settings.general.dataManagement.configSource.pathPlaceholder'
+                )}
                 value={newConfigPath}
                 onChange={(e) => setNewConfigPath(e.target.value)}
                 className="flex-1"
@@ -310,14 +423,25 @@ export function ConfigSourceManagement() {
             className="w-full"
           >
             <ArrowRight className="h-4 w-4 mr-2" />
-            {switching ? t('settings.general.dataManagement.configSource.switching') : t('settings.general.dataManagement.configSource.switchSourceButton')}
+            {switching
+              ? t('settings.general.dataManagement.configSource.switching')
+              : t(
+                  'settings.general.dataManagement.configSource.switchSourceButton'
+                )}
           </Button>
 
           {/* Warning */}
           <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-sm dark:border-yellow-800 dark:bg-yellow-950">
-            <p className="font-medium text-yellow-800 dark:text-yellow-200">{t('settings.general.dataManagement.configSource.important')}</p>
+            <p className="font-medium text-yellow-800 dark:text-yellow-200">
+              {t('settings.general.dataManagement.configSource.important')}
+            </p>
             <ul className="list-disc list-inside text-yellow-700 dark:text-yellow-300 mt-2 space-y-1">
-              {(t('settings.general.dataManagement.configSource.importantList', { returnObjects: true }) as string[]).map((item: string, i: number) => (
+              {(
+                t(
+                  'settings.general.dataManagement.configSource.importantList',
+                  { returnObjects: true }
+                ) as string[]
+              ).map((item: string, i: number) => (
                 <li key={i}>{item}</li>
               ))}
             </ul>

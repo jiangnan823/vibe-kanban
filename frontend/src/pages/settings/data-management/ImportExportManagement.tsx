@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
@@ -32,11 +38,15 @@ export function ImportExportManagement() {
     try {
       const params = new URLSearchParams();
       if (exportOptions.include_config) params.append('include_config', 'true');
-      if (exportOptions.include_profiles) params.append('include_profiles', 'true');
-      if (exportOptions.include_projects) params.append('include_projects', 'true');
+      if (exportOptions.include_profiles)
+        params.append('include_profiles', 'true');
+      if (exportOptions.include_projects)
+        params.append('include_projects', 'true');
       if (exportOptions.include_tags) params.append('include_tags', 'true');
 
-      const response = await fetch(`/api/data-management/export/config?${params}`);
+      const response = await fetch(
+        `/api/data-management/export/config?${params}`
+      );
       const data = await response.json();
 
       if (data.data) {
@@ -52,7 +62,9 @@ export function ImportExportManagement() {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
 
-        toast.success(t('settings.general.dataManagement.toasts.exportedSuccessfully'));
+        toast.success(
+          t('settings.general.dataManagement.toasts.exportedSuccessfully')
+        );
       }
     } catch (error) {
       toast.error(t('settings.general.dataManagement.toasts.exportFailed'));
@@ -94,9 +106,15 @@ export function ImportExportManagement() {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      toast.success(t('settings.general.dataManagement.toasts.sessionsExportedSuccessfully'));
+      toast.success(
+        t('settings.general.dataManagement.toasts.sessionsExportedSuccessfully')
+      );
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : t('settings.general.dataManagement.toasts.exportFailed'));
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : t('settings.general.dataManagement.toasts.exportFailed')
+      );
       console.error(error);
     } finally {
       setIsExporting(false);
@@ -135,9 +153,14 @@ export function ImportExportManagement() {
 
         if (data.success) {
           setImportResult(data.data);
-          toast.success(t('settings.general.dataManagement.toasts.importedSuccessfully'));
+          toast.success(
+            t('settings.general.dataManagement.toasts.importedSuccessfully')
+          );
         } else {
-          toast.error(data.message || t('settings.general.dataManagement.toasts.importFailed'));
+          toast.error(
+            data.message ||
+              t('settings.general.dataManagement.toasts.importFailed')
+          );
         }
       } catch (error) {
         toast.error(t('settings.general.dataManagement.toasts.importFailed'));
@@ -154,25 +177,43 @@ export function ImportExportManagement() {
       {/* Export Configuration */}
       <Card>
         <CardHeader>
-          <CardTitle>{t('settings.general.dataManagement.importExport.exportConfig.title')}</CardTitle>
+          <CardTitle>
+            {t(
+              'settings.general.dataManagement.importExport.exportConfig.title'
+            )}
+          </CardTitle>
           <CardDescription>
-            {t('settings.general.dataManagement.importExport.exportConfig.description')}
+            {t(
+              'settings.general.dataManagement.importExport.exportConfig.description'
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-3">
-            <Label className="text-sm font-medium">{t('settings.general.dataManagement.importExport.exportConfig.includeInExport')}</Label>
+            <Label className="text-sm font-medium">
+              {t(
+                'settings.general.dataManagement.importExport.exportConfig.includeInExport'
+              )}
+            </Label>
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="export-config"
                   checked={exportOptions.include_config}
                   onCheckedChange={(checked) =>
-                    setExportOptions({ ...exportOptions, include_config: checked as boolean })
+                    setExportOptions({
+                      ...exportOptions,
+                      include_config: checked as boolean,
+                    })
                   }
                 />
-                <label htmlFor="export-config" className="text-sm cursor-pointer">
-                  {t('settings.general.dataManagement.importExport.exportConfig.applicationConfig')}
+                <label
+                  htmlFor="export-config"
+                  className="text-sm cursor-pointer"
+                >
+                  {t(
+                    'settings.general.dataManagement.importExport.exportConfig.applicationConfig'
+                  )}
                 </label>
               </div>
               <div className="flex items-center space-x-2">
@@ -180,11 +221,19 @@ export function ImportExportManagement() {
                   id="export-profiles"
                   checked={exportOptions.include_profiles}
                   onCheckedChange={(checked) =>
-                    setExportOptions({ ...exportOptions, include_profiles: checked as boolean })
+                    setExportOptions({
+                      ...exportOptions,
+                      include_profiles: checked as boolean,
+                    })
                   }
                 />
-                <label htmlFor="export-profiles" className="text-sm cursor-pointer">
-                  {t('settings.general.dataManagement.importExport.exportConfig.agentProfiles')}
+                <label
+                  htmlFor="export-profiles"
+                  className="text-sm cursor-pointer"
+                >
+                  {t(
+                    'settings.general.dataManagement.importExport.exportConfig.agentProfiles'
+                  )}
                 </label>
               </div>
               <div className="flex items-center space-x-2">
@@ -192,11 +241,19 @@ export function ImportExportManagement() {
                   id="export-projects"
                   checked={exportOptions.include_projects}
                   onCheckedChange={(checked) =>
-                    setExportOptions({ ...exportOptions, include_projects: checked as boolean })
+                    setExportOptions({
+                      ...exportOptions,
+                      include_projects: checked as boolean,
+                    })
                   }
                 />
-                <label htmlFor="export-projects" className="text-sm cursor-pointer">
-                  {t('settings.general.dataManagement.importExport.exportConfig.projectMetadata')}
+                <label
+                  htmlFor="export-projects"
+                  className="text-sm cursor-pointer"
+                >
+                  {t(
+                    'settings.general.dataManagement.importExport.exportConfig.projectMetadata'
+                  )}
                 </label>
               </div>
               <div className="flex items-center space-x-2">
@@ -204,18 +261,33 @@ export function ImportExportManagement() {
                   id="export-tags"
                   checked={exportOptions.include_tags}
                   onCheckedChange={(checked) =>
-                    setExportOptions({ ...exportOptions, include_tags: checked as boolean })
+                    setExportOptions({
+                      ...exportOptions,
+                      include_tags: checked as boolean,
+                    })
                   }
                 />
                 <label htmlFor="export-tags" className="text-sm cursor-pointer">
-                  {t('settings.general.dataManagement.importExport.exportConfig.taskTags')}
+                  {t(
+                    'settings.general.dataManagement.importExport.exportConfig.taskTags'
+                  )}
                 </label>
               </div>
             </div>
           </div>
-          <Button onClick={handleExport} disabled={isExporting} className="w-full sm:w-auto">
+          <Button
+            onClick={handleExport}
+            disabled={isExporting}
+            className="w-full sm:w-auto"
+          >
             <Download className="h-4 w-4 mr-2" />
-            {isExporting ? t('settings.general.dataManagement.importExport.exportConfig.exporting') : t('settings.general.dataManagement.importExport.exportConfig.exportButton')}
+            {isExporting
+              ? t(
+                  'settings.general.dataManagement.importExport.exportConfig.exporting'
+                )
+              : t(
+                  'settings.general.dataManagement.importExport.exportConfig.exportButton'
+                )}
           </Button>
         </CardContent>
       </Card>
@@ -223,24 +295,44 @@ export function ImportExportManagement() {
       {/* Export Sessions */}
       <Card>
         <CardHeader>
-          <CardTitle>{t('settings.general.dataManagement.importExport.exportSessions.title')}</CardTitle>
+          <CardTitle>
+            {t(
+              'settings.general.dataManagement.importExport.exportSessions.title'
+            )}
+          </CardTitle>
           <CardDescription>
-            {t('settings.general.dataManagement.importExport.exportSessions.description')}
+            {t(
+              'settings.general.dataManagement.importExport.exportSessions.description'
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="rounded-lg bg-muted p-4 text-sm space-y-2">
-            <p className="font-medium">{t('settings.general.dataManagement.importExport.exportSessions.organizedAs')}</p>
+            <p className="font-medium">
+              {t(
+                'settings.general.dataManagement.importExport.exportSessions.organizedAs'
+              )}
+            </p>
             <pre className="text-xs bg-muted-foreground/10 p-2 rounded">
               sessions/
-              {'\n'}  {'{project_name}'}/
-              {'\n'}    {'{task_name}'}/
-              {'\n'}      2025-01-23-14-30.md
+              {'\n'} {'{project_name}'}/{'\n'} {'{task_name}'}/{'\n'}{' '}
+              2025-01-23-14-30.md
             </pre>
           </div>
-          <Button onClick={handleExportSessions} disabled={isExporting} variant="outline" className="w-full sm:w-auto">
+          <Button
+            onClick={handleExportSessions}
+            disabled={isExporting}
+            variant="outline"
+            className="w-full sm:w-auto"
+          >
             <Package className="h-4 w-4 mr-2" />
-            {isExporting ? t('settings.general.dataManagement.importExport.exportSessions.exporting') : t('settings.general.dataManagement.importExport.exportSessions.exportAllButton')}
+            {isExporting
+              ? t(
+                  'settings.general.dataManagement.importExport.exportSessions.exporting'
+                )
+              : t(
+                  'settings.general.dataManagement.importExport.exportSessions.exportAllButton'
+                )}
           </Button>
         </CardContent>
       </Card>
@@ -248,25 +340,43 @@ export function ImportExportManagement() {
       {/* Import Configuration */}
       <Card>
         <CardHeader>
-          <CardTitle>{t('settings.general.dataManagement.importExport.importConfig.title')}</CardTitle>
+          <CardTitle>
+            {t(
+              'settings.general.dataManagement.importExport.importConfig.title'
+            )}
+          </CardTitle>
           <CardDescription>
-            {t('settings.general.dataManagement.importExport.importConfig.description')}
+            {t(
+              'settings.general.dataManagement.importExport.importConfig.description'
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-3">
-            <Label className="text-sm font-medium">{t('settings.general.dataManagement.importExport.importConfig.importOptions')}</Label>
+            <Label className="text-sm font-medium">
+              {t(
+                'settings.general.dataManagement.importExport.importConfig.importOptions'
+              )}
+            </Label>
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="skip-existing"
                   checked={importOptions.skip_existing}
                   onCheckedChange={(checked) =>
-                    setImportOptions({ ...importOptions, skip_existing: checked as boolean })
+                    setImportOptions({
+                      ...importOptions,
+                      skip_existing: checked as boolean,
+                    })
                   }
                 />
-                <label htmlFor="skip-existing" className="text-sm cursor-pointer">
-                  {t('settings.general.dataManagement.importExport.importConfig.skipExisting')}
+                <label
+                  htmlFor="skip-existing"
+                  className="text-sm cursor-pointer"
+                >
+                  {t(
+                    'settings.general.dataManagement.importExport.importConfig.skipExisting'
+                  )}
                 </label>
               </div>
               <div className="flex items-center space-x-2">
@@ -274,61 +384,118 @@ export function ImportExportManagement() {
                   id="overwrite-config"
                   checked={importOptions.overwrite_config}
                   onCheckedChange={(checked) =>
-                    setImportOptions({ ...importOptions, overwrite_config: checked as boolean })
+                    setImportOptions({
+                      ...importOptions,
+                      overwrite_config: checked as boolean,
+                    })
                   }
                 />
-                <label htmlFor="overwrite-config" className="text-sm cursor-pointer">
-                  {t('settings.general.dataManagement.importExport.importConfig.overwriteConfig')}
+                <label
+                  htmlFor="overwrite-config"
+                  className="text-sm cursor-pointer"
+                >
+                  {t(
+                    'settings.general.dataManagement.importExport.importConfig.overwriteConfig'
+                  )}
                 </label>
               </div>
             </div>
           </div>
           <div className="rounded-lg bg-muted p-4 text-sm space-y-2">
-            <p className="font-medium">{t('settings.general.dataManagement.importExport.importConfig.note')}</p>
+            <p className="font-medium">
+              {t(
+                'settings.general.dataManagement.importExport.importConfig.note'
+              )}
+            </p>
             <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-              {(t('settings.general.dataManagement.importExport.importConfig.noteList', { returnObjects: true }) as string[]).map((item: string, i: number) => (
+              {(
+                t(
+                  'settings.general.dataManagement.importExport.importConfig.noteList',
+                  { returnObjects: true }
+                ) as string[]
+              ).map((item: string, i: number) => (
                 <li key={i}>{item}</li>
               ))}
             </ul>
           </div>
-          <Button onClick={handleImport} disabled={isImporting} variant="outline" className="w-full sm:w-auto">
+          <Button
+            onClick={handleImport}
+            disabled={isImporting}
+            variant="outline"
+            className="w-full sm:w-auto"
+          >
             <Upload className="h-4 w-4 mr-2" />
-            {isImporting ? t('settings.general.dataManagement.importExport.importConfig.importing') : t('settings.general.dataManagement.importExport.importConfig.importButton')}
+            {isImporting
+              ? t(
+                  'settings.general.dataManagement.importExport.importConfig.importing'
+                )
+              : t(
+                  'settings.general.dataManagement.importExport.importConfig.importButton'
+                )}
           </Button>
 
           {/* Import Result */}
           {importResult && (
             <div className="rounded-lg border p-4 space-y-2">
-              <p className="font-medium text-sm">{t('settings.general.dataManagement.importExport.importConfig.importResult')}</p>
+              <p className="font-medium text-sm">
+                {t(
+                  'settings.general.dataManagement.importExport.importConfig.importResult'
+                )}
+              </p>
               {importResult.imported.length > 0 && (
                 <div className="text-sm">
-                  <p className="text-green-600 font-medium">{t('settings.general.dataManagement.importExport.importConfig.imported', { count: importResult.imported.length })}</p>
+                  <p className="text-green-600 font-medium">
+                    {t(
+                      'settings.general.dataManagement.importExport.importConfig.imported',
+                      { count: importResult.imported.length }
+                    )}
+                  </p>
                   <ul className="list-disc list-inside text-muted-foreground ml-2">
                     {importResult.imported.slice(0, 5).map((item, i) => (
                       <li key={i}>{item}</li>
                     ))}
                     {importResult.imported.length > 5 && (
-                      <li>{t('settings.general.dataManagement.importExport.importConfig.andMore', { count: importResult.imported.length - 5 })}</li>
+                      <li>
+                        {t(
+                          'settings.general.dataManagement.importExport.importConfig.andMore',
+                          { count: importResult.imported.length - 5 }
+                        )}
+                      </li>
                     )}
                   </ul>
                 </div>
               )}
               {importResult.skipped.length > 0 && (
                 <div className="text-sm">
-                  <p className="text-yellow-600 font-medium">{t('settings.general.dataManagement.importExport.importConfig.skipped', { count: importResult.skipped.length })}</p>
+                  <p className="text-yellow-600 font-medium">
+                    {t(
+                      'settings.general.dataManagement.importExport.importConfig.skipped',
+                      { count: importResult.skipped.length }
+                    )}
+                  </p>
                   <ul className="list-disc list-inside text-muted-foreground ml-2">
                     {importResult.skipped.slice(0, 5).map((item, i) => (
                       <li key={i}>{item}</li>
                     ))}
                     {importResult.skipped.length > 5 && (
-                      <li>{t('settings.general.dataManagement.importExport.importConfig.andMore', { count: importResult.skipped.length - 5 })}</li>
+                      <li>
+                        {t(
+                          'settings.general.dataManagement.importExport.importConfig.andMore',
+                          { count: importResult.skipped.length - 5 }
+                        )}
+                      </li>
                     )}
                   </ul>
                 </div>
               )}
               {importResult.errors.length > 0 && (
                 <div className="text-sm">
-                  <p className="text-red-600 font-medium">{t('settings.general.dataManagement.importExport.importConfig.errors', { count: importResult.errors.length })}</p>
+                  <p className="text-red-600 font-medium">
+                    {t(
+                      'settings.general.dataManagement.importExport.importConfig.errors',
+                      { count: importResult.errors.length }
+                    )}
+                  </p>
                   <ul className="list-disc list-inside text-red-400 ml-2">
                     {importResult.errors.map((error, i) => (
                       <li key={i}>{error}</li>

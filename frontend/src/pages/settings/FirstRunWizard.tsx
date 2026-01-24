@@ -2,13 +2,25 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
-import { CheckCircle, XCircle, ArrowRight, FolderOpen, Sparkles } from 'lucide-react';
+import {
+  CheckCircle,
+  XCircle,
+  ArrowRight,
+  FolderOpen,
+  Sparkles,
+} from 'lucide-react';
 import { useFilePicker } from '@/hooks';
 import { normalizePath } from '@/lib/pathUtils';
 
@@ -27,7 +39,9 @@ export function FirstRunWizard() {
   const navigate = useNavigate();
   const { pickFolder } = useFilePicker();
   const [currentStep, setCurrentStep] = useState<WizardStep>('welcome');
-  const [checkResult, setCheckResult] = useState<FirstRunCheckResponse | null>(null);
+  const [checkResult, setCheckResult] = useState<FirstRunCheckResponse | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const [configPath, setConfigPath] = useState('');
   const [copyExisting, setCopyExisting] = useState(false);
@@ -37,6 +51,8 @@ export function FirstRunWizard() {
 
   useEffect(() => {
     checkFirstRun();
+    // Only run on mount - checkFirstRun is defined locally
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const checkFirstRun = async () => {
@@ -84,17 +100,22 @@ export function FirstRunWizard() {
 
   const validateConfig = async (path: string) => {
     try {
-      const response = await fetch('/api/data-management/config-source/validate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path }),
-      });
+      const response = await fetch(
+        '/api/data-management/config-source/validate',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path }),
+        }
+      );
       const data = await response.json();
 
       setConfigValid(data.data.valid);
 
       if (!data.data.valid) {
-        toast.error(t('error.invalidConfig', { issues: data.data.issues.join(', ') }));
+        toast.error(
+          t('error.invalidConfig', { issues: data.data.issues.join(', ') })
+        );
       }
     } catch (error) {
       setConfigValid(false);
@@ -110,14 +131,17 @@ export function FirstRunWizard() {
 
     setSwitching(true);
     try {
-      const response = await fetch('/api/data-management/config-source/switch', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          path: configPath,
-          copy_existing: copyExisting,
-        }),
-      });
+      const response = await fetch(
+        '/api/data-management/config-source/switch',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            path: configPath,
+            copy_existing: copyExisting,
+          }),
+        }
+      );
 
       const data = await response.json();
 
@@ -148,7 +172,9 @@ export function FirstRunWizard() {
           <CardContent className="p-6">
             <div className="text-center">
               <Sparkles className="h-12 w-12 mx-auto mb-4 text-primary animate-pulse" />
-              <p className="text-muted-foreground">{t('loading.checkingConfiguration')}</p>
+              <p className="text-muted-foreground">
+                {t('loading.checkingConfiguration')}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -161,9 +187,17 @@ export function FirstRunWizard() {
       <div className="w-full max-w-2xl space-y-4">
         {/* Progress Indicator */}
         <div className="flex justify-center gap-2">
-          <Badge variant={currentStep === 'welcome' ? 'default' : 'secondary'}>{t('progress.welcome')}</Badge>
-          <Badge variant={currentStep === 'choose-config' ? 'default' : 'secondary'}>{t('progress.setup')}</Badge>
-          <Badge variant={currentStep === 'complete' ? 'default' : 'secondary'}>{t('progress.complete')}</Badge>
+          <Badge variant={currentStep === 'welcome' ? 'default' : 'secondary'}>
+            {t('progress.welcome')}
+          </Badge>
+          <Badge
+            variant={currentStep === 'choose-config' ? 'default' : 'secondary'}
+          >
+            {t('progress.setup')}
+          </Badge>
+          <Badge variant={currentStep === 'complete' ? 'default' : 'secondary'}>
+            {t('progress.complete')}
+          </Badge>
         </div>
 
         {/* Step 1: Welcome */}
@@ -182,7 +216,9 @@ export function FirstRunWizard() {
               {/* Issues */}
               {checkResult && checkResult.issues.length > 0 && (
                 <div className="rounded-lg bg-destructive/10 p-4 space-y-2">
-                  <p className="font-medium text-sm text-destructive">{t('welcome.issues.label')}</p>
+                  <p className="font-medium text-sm text-destructive">
+                    {t('welcome.issues.label')}
+                  </p>
                   <ul className="list-disc list-inside text-sm text-destructive space-y-1">
                     {checkResult.issues.map((issue, i) => (
                       <li key={i}>{issue}</li>
@@ -201,7 +237,9 @@ export function FirstRunWizard() {
                     <div className="flex items-start gap-3">
                       <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
                       <div className="flex-1">
-                        <h3 className="font-medium">{t('welcome.options.useDefault.title')}</h3>
+                        <h3 className="font-medium">
+                          {t('welcome.options.useDefault.title')}
+                        </h3>
                         <p className="text-sm text-muted-foreground mt-1">
                           {t('welcome.options.useDefault.description')}
                         </p>
@@ -218,7 +256,9 @@ export function FirstRunWizard() {
                     <div className="flex items-start gap-3">
                       <FolderOpen className="h-5 w-5 text-blue-500 mt-0.5" />
                       <div className="flex-1">
-                        <h3 className="font-medium">{t('welcome.options.useExisting.title')}</h3>
+                        <h3 className="font-medium">
+                          {t('welcome.options.useExisting.title')}
+                        </h3>
                         <p className="text-sm text-muted-foreground mt-1">
                           {t('welcome.options.useExisting.description')}
                         </p>
@@ -231,7 +271,9 @@ export function FirstRunWizard() {
               {/* Suggested Actions */}
               {checkResult && checkResult.suggested_actions.length > 0 && (
                 <div className="rounded-lg bg-muted p-4">
-                  <p className="font-medium text-sm mb-2">{t('welcome.suggestedActions.title')}</p>
+                  <p className="font-medium text-sm mb-2">
+                    {t('welcome.suggestedActions.title')}
+                  </p>
                   <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
                     {checkResult.suggested_actions.map((action, i) => (
                       <li key={i}>{action}</li>
@@ -248,14 +290,14 @@ export function FirstRunWizard() {
           <Card>
             <CardHeader>
               <CardTitle>{t('setup.title')}</CardTitle>
-              <CardDescription>
-                {t('setup.description')}
-              </CardDescription>
+              <CardDescription>{t('setup.description')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Info */}
               <div className="rounded-lg bg-blue-50 dark:bg-blue-950 p-4 text-sm">
-                <p className="font-medium text-blue-800 dark:text-blue-200 mb-2">{t('setup.requirements.title')}</p>
+                <p className="font-medium text-blue-800 dark:text-blue-200 mb-2">
+                  {t('setup.requirements.title')}
+                </p>
                 <ul className="list-disc list-inside text-blue-700 dark:text-blue-300 space-y-1">
                   <li>{t('setup.requirements.configJson')}</li>
                   <li>{t('setup.requirements.profilesJson')}</li>
@@ -286,12 +328,16 @@ export function FirstRunWizard() {
                     {configValid ? (
                       <>
                         <CheckCircle className="h-4 w-4 text-green-500" />
-                        <span className="text-green-600">{t('setup.validDirectory')}</span>
+                        <span className="text-green-600">
+                          {t('setup.validDirectory')}
+                        </span>
                       </>
                     ) : (
                       <>
                         <XCircle className="h-4 w-4 text-red-500" />
-                        <span className="text-red-600">{t('setup.invalidDirectory')}</span>
+                        <span className="text-red-600">
+                          {t('setup.invalidDirectory')}
+                        </span>
                       </>
                     )}
                   </div>
@@ -303,9 +349,14 @@ export function FirstRunWizard() {
                 <Checkbox
                   id="copy-existing-wizard"
                   checked={copyExisting}
-                  onCheckedChange={(checked) => setCopyExisting(checked as boolean)}
+                  onCheckedChange={(checked) =>
+                    setCopyExisting(checked as boolean)
+                  }
                 />
-                <label htmlFor="copy-existing-wizard" className="text-sm cursor-pointer">
+                <label
+                  htmlFor="copy-existing-wizard"
+                  className="text-sm cursor-pointer"
+                >
                   {t('setup.copyDefaultConfig')}
                 </label>
               </div>
@@ -325,7 +376,9 @@ export function FirstRunWizard() {
                   className="flex-1"
                 >
                   <ArrowRight className="h-4 w-4 mr-2" />
-                  {switching ? t('setup.buttons.applying') : t('setup.buttons.applyConfiguration')}
+                  {switching
+                    ? t('setup.buttons.applying')
+                    : t('setup.buttons.applyConfiguration')}
                 </Button>
               </div>
             </CardContent>
@@ -346,17 +399,22 @@ export function FirstRunWizard() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="rounded-lg bg-green-50 dark:bg-green-950 p-4 text-sm">
-                <p className="font-medium text-green-800 dark:text-green-200 mb-2">{t('complete.whatsNext.title')}</p>
+                <p className="font-medium text-green-800 dark:text-green-200 mb-2">
+                  {t('complete.whatsNext.title')}
+                </p>
                 <ul className="list-disc list-inside text-green-700 dark:text-green-300 space-y-1">
                   <li>{t('complete.whatsNext.exploreProjects')}</li>
                   <li>{t('complete.whatsNext.customizeSettings')}</li>
                   <li>{t('complete.whatsNext.saveSessions')}</li>
-                  {!useDefault && <li>{t('complete.whatsNext.configureRepos')}</li>}
+                  {!useDefault && (
+                    <li>{t('complete.whatsNext.configureRepos')}</li>
+                  )}
                 </ul>
               </div>
 
               <Button onClick={handleComplete} className="w-full" size="lg">
-                {t('complete.getStarted')} <ArrowRight className="h-4 w-4 ml-2" />
+                {t('complete.getStarted')}{' '}
+                <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             </CardContent>
           </Card>

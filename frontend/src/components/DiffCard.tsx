@@ -47,7 +47,8 @@ type Props = {
 function labelAndIcon(diff: Diff, t: (key: string) => string) {
   const c = diff.change;
   if (c === 'deleted') return { label: t('status.deleted'), Icon: Trash2 };
-  if (c === 'renamed') return { label: t('status.renamed'), Icon: ArrowLeftRight };
+  if (c === 'renamed')
+    return { label: t('status.renamed'), Icon: ArrowLeftRight };
   if (c === 'added')
     return { label: undefined as string | undefined, Icon: FilePlus2 };
   if (c === 'copied') return { label: t('status.copied'), Icon: Copy };

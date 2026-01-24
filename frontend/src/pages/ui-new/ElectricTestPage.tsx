@@ -231,7 +231,9 @@ function MutationPanel({
         )}
       </div>
       {selectedId && (
-        <p className="text-xs text-low">{t('mutations.selected')}: {truncateId(selectedId)}</p>
+        <p className="text-xs text-low">
+          {t('mutations.selected')}: {truncateId(selectedId)}
+        </p>
       )}
     </div>
   );
@@ -290,12 +292,16 @@ function ProjectsList({
   };
 
   if (error)
-    return <ErrorState syncError={error} title={t('syncError')} onRetry={retry} />;
+    return (
+      <ErrorState syncError={error} title={t('syncError')} onRetry={retry} />
+    );
   if (isLoading) return <LoadingState message={t('loadingProjects')} />;
 
   return (
     <div>
-      <p className="text-sm text-low mb-base">{data.length} {t('synced')}</p>
+      <p className="text-sm text-low mb-base">
+        {data.length} {t('synced')}
+      </p>
       <DataTable
         data={data}
         getRowId={(p) => p.id}
@@ -333,7 +339,9 @@ function ProjectsList({
       >
         <div className="flex gap-base items-end flex-wrap">
           <div>
-            <label className="block text-xs text-low mb-half">{t('table.name')}</label>
+            <label className="block text-xs text-low mb-half">
+              {t('table.name')}
+            </label>
             <input
               type="text"
               value={newProjectName}
@@ -343,7 +351,9 @@ function ProjectsList({
             />
           </div>
           <div>
-            <label className="block text-xs text-low mb-half">{t('table.color')}</label>
+            <label className="block text-xs text-low mb-half">
+              {t('table.color')}
+            </label>
             <input
               type="color"
               value={newProjectColor}

@@ -20,7 +20,14 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Loader2, Volume2, Folder, FolderOpen, Power, Monitor } from 'lucide-react';
+import {
+  Loader2,
+  Volume2,
+  Folder,
+  FolderOpen,
+  Power,
+  Monitor,
+} from 'lucide-react';
 import {
   DEFAULT_PR_DESCRIPTION_PROMPT,
   EditorType,
@@ -68,10 +75,13 @@ export function GeneralSettings() {
   const { setTheme } = useTheme();
 
   // Data storage state management
-  const [dataStorageInfo, setDataStorageInfo] = useState<PathConfigInfo | null>(null);
+  const [dataStorageInfo, setDataStorageInfo] = useState<PathConfigInfo | null>(
+    null
+  );
   const [loadingStorage, setLoadingStorage] = useState(true);
   const [credentialsWarning, setCredentialsWarning] = useState(false);
-  const [storageSuccessMessage, setStorageSuccessMessage] = useState<string>('');
+  const [storageSuccessMessage, setStorageSuccessMessage] =
+    useState<string>('');
   const [storageErrorMessage, setStorageErrorMessage] = useState<string>('');
 
   // App management state
@@ -214,18 +224,20 @@ export function GeneralSettings() {
       setCredentialsWarning(false);
     } catch (err) {
       console.error('Failed to load path config:', err);
-      setStorageErrorMessage(t('settings.general.dataStorage.errors.loadFailed'));
+      setStorageErrorMessage(
+        t('settings.general.dataStorage.errors.loadFailed')
+      );
     } finally {
       setLoadingStorage(false);
     }
   };
 
   const handleSelectCustomPath = async () => {
-    const selectedPath = await FolderPickerDialog.show({
+    const selectedPath = (await FolderPickerDialog.show({
       title: t('settings.general.dataStorage.picker.title'),
       description: t('settings.general.dataStorage.picker.description'),
       value: dataStorageInfo?.current_path || '',
-    }) as string | null;
+    })) as string | null;
 
     if (!selectedPath) return; // User cancelled
 
@@ -244,8 +256,11 @@ export function GeneralSettings() {
 
       // Refresh path info
       await loadPathConfig();
-    } catch (err: any) {
-      const errorMsg = err?.message || t('settings.general.dataStorage.errors.saveFailed');
+    } catch (err: unknown) {
+      const errorMsg =
+        err instanceof Error
+          ? err.message
+          : t('settings.general.dataStorage.errors.saveFailed');
       setStorageErrorMessage(errorMsg);
     } finally {
       setLoadingStorage(false);
@@ -269,8 +284,11 @@ export function GeneralSettings() {
 
       // Refresh path info
       await loadPathConfig();
-    } catch (err: any) {
-      const errorMsg = err?.message || t('settings.general.dataStorage.errors.resetFailed');
+    } catch (err: unknown) {
+      const errorMsg =
+        err instanceof Error
+          ? err.message
+          : t('settings.general.dataStorage.errors.resetFailed');
       setStorageErrorMessage(errorMsg);
     } finally {
       setLoadingStorage(false);
@@ -296,8 +314,13 @@ export function GeneralSettings() {
       setShortcutExists(true);
       setShortcutMessage(result.message);
       setTimeout(() => setShortcutMessage(''), 5000);
-    } catch (err: any) {
-      const errorMsg = err?.message || t('settings.general.appManagement.desktopShortcut.errors.createFailed');
+    } catch (err: unknown) {
+      const errorMsg =
+        err instanceof Error
+          ? err.message
+          : t(
+              'settings.general.appManagement.desktopShortcut.errors.createFailed'
+            );
       setShortcutMessage(errorMsg);
       setTimeout(() => setShortcutMessage(''), 5000);
     } finally {
@@ -313,8 +336,11 @@ export function GeneralSettings() {
     try {
       await appManagementApi.exitApp();
       // The app will shut down, no need to do anything else
-    } catch (err: any) {
-      const errorMsg = err?.message || t('settings.general.appManagement.exit.errors.failed');
+    } catch (err: unknown) {
+      const errorMsg =
+        err instanceof Error
+          ? err.message
+          : t('settings.general.appManagement.exit.errors.failed');
       setShortcutMessage(errorMsg);
       setTimeout(() => setShortcutMessage(''), 5000);
     }
@@ -324,6 +350,8 @@ export function GeneralSettings() {
   useEffect(() => {
     loadPathConfig();
     checkShortcutExists();
+    // Only run on mount - functions are defined locally
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) {
@@ -449,7 +477,9 @@ export function GeneralSettings() {
             <Label>{t('settings.general.dataStorage.currentPath.label')}</Label>
             <div className="flex items-center space-x-2">
               <code className="flex-1 text-sm bg-muted px-3 py-2 rounded block overflow-hidden text-ellipsis">
-                {loadingStorage ? 'Loading...' : dataStorageInfo?.current_path || ''}
+                {loadingStorage
+                  ? 'Loading...'
+                  : dataStorageInfo?.current_path || ''}
               </code>
               {dataStorageInfo?.is_custom && (
                 <span className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded">
@@ -1077,15 +1107,26 @@ export function GeneralSettings() {
                     <Monitor className="mr-2 h-4 w-4" />
                   )}
                   {shortcutExists
-                    ? t('settings.general.appManagement.desktopShortcut.recreate')
-                    : t('settings.general.appManagement.desktopShortcut.create')}
+                    ? t(
+                        'settings.general.appManagement.desktopShortcut.recreate'
+                      )
+                    : t(
+                        'settings.general.appManagement.desktopShortcut.create'
+                      )}
                 </Button>
               </div>
             </div>
 
             {/* Shortcut message */}
             {shortcutMessage && (
-              <Alert variant={shortcutMessage.includes('error') || shortcutMessage.includes('Failed') ? 'destructive' : 'default'}>
+              <Alert
+                variant={
+                  shortcutMessage.includes('error') ||
+                  shortcutMessage.includes('Failed')
+                    ? 'destructive'
+                    : 'default'
+                }
+              >
                 <AlertDescription>{shortcutMessage}</AlertDescription>
               </Alert>
             )}

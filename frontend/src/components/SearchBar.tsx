@@ -30,7 +30,11 @@ export const SearchBar = React.forwardRef<HTMLInputElement, SearchBarProps>(
           value={value}
           onChange={(e) => onChange?.(e.target.value)}
           disabled={disabled}
-          placeholder={project ? t('placeholder.withProject', { projectName: project.name }) : t('placeholder.default')}
+          placeholder={
+            project
+              ? t('placeholder.withProject', { projectName: project.name })
+              : t('placeholder.default')
+          }
           className="pl-8 pr-14 h-8 bg-muted"
         />
       </div>

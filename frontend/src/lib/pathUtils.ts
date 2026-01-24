@@ -74,11 +74,15 @@ export function normalizePath(path: string, targetPlatform?: Platform): string {
  * @param toPlatform - Target platform
  * @returns Converted path
  */
-export function convertPath(path: string, _fromPlatform: Platform, toPlatform: Platform): string {
+export function convertPath(
+  path: string,
+  _fromPlatform: Platform,
+  toPlatform: Platform
+): string {
   if (!path) return '';
 
   // First normalize to internal format (forward slashes)
-  let normalized = path.replace(/\\/g, '/').replace(/\/+/g, '/');
+  const normalized = path.replace(/\\/g, '/').replace(/\/+/g, '/');
 
   // Then convert to target platform
   if (toPlatform === 'windows') {
@@ -126,7 +130,7 @@ export function joinPaths(...segments: string[]): string {
 
   const joined = segments
     .filter(Boolean)
-    .map(s => s.replace(/[\\/]+/g, '/').replace(/[\\/]$/, ''))
+    .map((s) => s.replace(/[\\/]+/g, '/').replace(/[\\/]$/, ''))
     .join('/');
 
   // Convert to target platform separator
@@ -267,7 +271,11 @@ export function makeRelative(from: string, to: string): string {
 
   // Find common prefix
   let i = 0;
-  while (i < fromParts.length && i < toParts.length && fromParts[i] === toParts[i]) {
+  while (
+    i < fromParts.length &&
+    i < toParts.length &&
+    fromParts[i] === toParts[i]
+  ) {
     i++;
   }
 

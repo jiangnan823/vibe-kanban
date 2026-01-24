@@ -29,7 +29,8 @@ export function useFilePicker(): UseFilePickerReturn {
   const { t } = useTranslation('filePicker');
 
   // Check if native file system access API is supported
-  const isFsApiSupported = 'showOpenFilePicker' in window || 'showDirectoryPicker' in window;
+  const isFsApiSupported =
+    'showOpenFilePicker' in window || 'showDirectoryPicker' in window;
 
   // Check if Tauri/Electron API is available
   const hasNativeApi = typeof window !== 'undefined' && 'api' in window;
@@ -38,96 +39,150 @@ export function useFilePicker(): UseFilePickerReturn {
 
   /**
    * Pick a single file
+   * Note: pickFile intentionally omits 'pick' from deps to avoid circular dependency
    */
-  const pickFile = useCallback(async (options: FilePickerOptions = {}): Promise<string | null> => {
-    const { accept = '*', title } = options;
-    return (await pick({ mode: 'file', accept, title })) as string | null;
-  }, []);
+  const pickFile = useCallback(
+    async (options: FilePickerOptions = {}): Promise<string | null> => {
+      const { accept = '*', title } = options;
+      return (await pick({ mode: 'file', accept, title })) as string | null;
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    },
+    []
+  );
 
   /**
    * Pick a folder
+   * Note: pickFolder intentionally omits 'pick' from deps to avoid circular dependency
    */
-  const pickFolder = useCallback(async (title?: string): Promise<string | null> => {
-    return (await pick({ mode: 'folder', title })) as string | null;
-  }, []);
+  const pickFolder = useCallback(
+    async (title?: string): Promise<string | null> => {
+      return (await pick({ mode: 'folder', title })) as string | null;
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    },
+    []
+  );
 
   /**
    * Universal file/folder picker with fallback support
    */
-  const pick = useCallback(async (options: FilePickerOptions = {}): Promise<string | string[] | null> => {
-    const { mode = 'file', multiple = false, accept = '*', title } = options;
+  const pick = useCallback(
+    async (
+      options: FilePickerOptions = {}
+    ): Promise<string | string[] | null> => {
+      const { mode = 'file', multiple = false, accept = '*', title } = options;
 
-    // Try Tauri/Electron API first (if available)
-    if (hasNativeApi && (window as any).api) {
-      try {
-        const api = (window as any).api;
+      // Try Tauri/Electron API first (if available)
+      if (
+        hasNativeApi &&
+        (window as unknown as { api?: Record<string, unknown> }).api
+      ) {
+        try {
+          const api = (window as unknown as { api: Record<string, unknown> })
+            .api;
 
-        if (mode === 'folder') {
-          if (api.selectFolder) {
-            return await api.selectFolder(title);
+          if (mode === 'folder') {
+            if (typeof api.selectFolder === 'function') {
+              return await (
+                api.selectFolder as (title?: string) => Promise<string>
+              )(title);
+            }
+          } else if (mode === 'file') {
+            if (typeof api.selectFile === 'function') {
+              return await (
+                api.selectFile as (options: {
+                  title?: string;
+                  multiple: boolean;
+                  accept: string;
+                }) => Promise<string | string[]>
+              ).call(api, { title, multiple, accept });
+            }
           }
-        } else if (mode === 'file') {
-          if (api.selectFile) {
-            return await api.selectFile({ title, multiple, accept });
-          }
+        } catch (error) {
+          console.error('[useFilePicker] Native API error:', error);
+          // Fall through to web APIs
         }
-      } catch (error) {
-        console.error('[useFilePicker] Native API error:', error);
-        // Fall through to web APIs
       }
-    }
 
-    // Try File System Access API (Web)
-    if (isFsApiSupported) {
-      try {
-        if (mode === 'folder') {
-          if ('showDirectoryPicker' in window) {
-            const handle = await (window as any).showDirectoryPicker({ title, mode: 'read' });
-            return handle.name;
+      // Try File System Access API (Web)
+      if (isFsApiSupported) {
+        try {
+          if (mode === 'folder') {
+            if ('showDirectoryPicker' in window) {
+              const handle = await (
+                window as unknown as {
+                  showDirectoryPicker: (options: {
+                    title?: string;
+                    mode: string;
+                  }) => Promise<{ name: string }>;
+                }
+              ).showDirectoryPicker({ title, mode: 'read' });
+              return handle.name;
+            }
+          } else if (mode === 'file') {
+            if ('showOpenFilePicker' in window) {
+              const handles = await (
+                window as unknown as {
+                  showOpenFilePicker: (options: {
+                    title?: string;
+                    multiple: boolean;
+                    types?: Array<{
+                      description: string;
+                      accept: Record<string, string>;
+                    }>;
+                  }) => Promise<Array<{ name: string }>[]>;
+                }
+              ).showOpenFilePicker({
+                title,
+                multiple,
+                types:
+                  accept !== '*'
+                    ? [
+                        {
+                          description: 'Files',
+                          accept: { [accept.split(',')[0]]: accept },
+                        },
+                      ]
+                    : undefined,
+              });
+              return multiple ? handles.map((h) => h.name) : handles[0].name;
+            }
           }
-        } else if (mode === 'file') {
-          if ('showOpenFilePicker' in window) {
-            const handles = await (window as any).showOpenFilePicker({
-              title,
-              multiple,
-              types: accept !== '*' ? [{
-                description: 'Files',
-                accept: { [accept.split(',')[0]]: accept }
-              }] : undefined
-            });
-            return multiple ? handles.map((h: any) => h.name) : handles[0].name;
+        } catch (error: unknown) {
+          // User cancelled or API not supported
+          const err = error as { name?: string };
+          if (err.name === 'AbortError') {
+            return null;
           }
+          console.error('[useFilePicker] File System Access API error:', error);
+          // Fall through to input element fallback
         }
-      } catch (error: any) {
-        // User cancelled or API not supported
-        if (error.name === 'AbortError') {
-          return null;
+      }
+
+      // Fallback: use traditional input element (for path selection in server context)
+      return new Promise((resolve) => {
+        // In a web context without native APIs, we need to prompt user for path
+        // This is typically used when the backend needs the path
+        const result = prompt(
+          title ||
+            t(mode === 'folder' ? 'folderPrompt' : 'filePrompt', { accept })
+        );
+
+        if (result) {
+          // Normalize path for cross-platform
+          resolve(normalizePath(result));
+        } else {
+          resolve(null);
         }
-        console.error('[useFilePicker] File System Access API error:', error);
-        // Fall through to input element fallback
-      }
-    }
-
-    // Fallback: use traditional input element (for path selection in server context)
-    return new Promise((resolve) => {
-      // In a web context without native APIs, we need to prompt user for path
-      // This is typically used when the backend needs the path
-      const result = prompt(title || t(mode === 'folder' ? 'folderPrompt' : 'filePrompt', { accept }));
-
-      if (result) {
-        // Normalize path for cross-platform
-        resolve(normalizePath(result));
-      } else {
-        resolve(null);
-      }
-    });
-  }, [t]);
+      });
+    },
+    [t, hasNativeApi, isFsApiSupported]
+  );
 
   return {
     pickFile,
     pickFolder,
     pick,
-    isSupported
+    isSupported,
   };
 }
 
@@ -175,7 +230,7 @@ export function joinPaths(...segments: string[]): string {
   const separator = getPathSeparator();
   const normalized = segments
     .filter(Boolean)
-    .map(s => s.replace(/\\/g, '/').replace(/\/$/, ''))
+    .map((s) => s.replace(/\\/g, '/').replace(/\/$/, ''))
     .join('/');
 
   // Convert back to platform-specific separator

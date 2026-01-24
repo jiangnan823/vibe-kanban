@@ -41,7 +41,9 @@ import { OAuthDialog } from '@/components/dialogs/global/OAuthDialog';
 import { useUserSystem } from '@/components/ConfigProvider';
 import { oauthApi } from '@/lib/api';
 
-const INTERNAL_NAV = [{ label: 'nav.projects', icon: FolderOpen, to: '/projects' }];
+const INTERNAL_NAV = [
+  { label: 'nav.projects', icon: FolderOpen, to: '/projects' },
+];
 
 const EXTERNAL_LINKS = [
   {

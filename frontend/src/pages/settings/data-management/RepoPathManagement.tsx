@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
@@ -37,7 +43,9 @@ export function RepoPathManagement() {
       setRepos(data.data.results);
       setProgress(100);
     } catch (error) {
-      toast.error(t('settings.general.dataManagement.toasts.failedToScanRepos'));
+      toast.error(
+        t('settings.general.dataManagement.toasts.failedToScanRepos')
+      );
       console.error(error);
     } finally {
       setScanning(false);
@@ -46,7 +54,11 @@ export function RepoPathManagement() {
 
   const handleFixPath = async (repo: RepoValidationInfo) => {
     // Use file picker to select new repository path
-    const newPath = await pickFolder(t('settings.general.dataManagement.repos.selectNewPath', { name: repo.repo_name }));
+    const newPath = await pickFolder(
+      t('settings.general.dataManagement.repos.selectNewPath', {
+        name: repo.repo_name,
+      })
+    );
 
     if (!newPath) return;
 
@@ -66,7 +78,10 @@ export function RepoPathManagement() {
         toast.success(t('settings.general.dataManagement.toasts.pathUpdated'));
         await handleScan();
       } else {
-        toast.error(data.data.message || t('settings.general.dataManagement.toasts.updateFailed'));
+        toast.error(
+          data.data.message ||
+            t('settings.general.dataManagement.toasts.updateFailed')
+        );
       }
     } catch (error) {
       toast.error(t('settings.general.dataManagement.toasts.failedToFixPath'));
@@ -81,7 +96,11 @@ export function RepoPathManagement() {
       return;
     }
 
-    toast.info(t('settings.general.dataManagement.repos.foundInvalidRepos', { count: invalidRepos.length }));
+    toast.info(
+      t('settings.general.dataManagement.repos.foundInvalidRepos', {
+        count: invalidRepos.length,
+      })
+    );
   };
 
   const invalidCount = repos.filter((r) => !r.valid).length;
@@ -89,7 +108,9 @@ export function RepoPathManagement() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t('settings.general.dataManagement.repos.title')}</CardTitle>
+        <CardTitle>
+          {t('settings.general.dataManagement.repos.title')}
+        </CardTitle>
         <CardDescription>
           {t('settings.general.dataManagement.repos.description')}
         </CardDescription>
@@ -99,7 +120,11 @@ export function RepoPathManagement() {
         {scanning && (
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
-              <span>{t('settings.general.dataManagement.repos.scanningRepositories')}</span>
+              <span>
+                {t(
+                  'settings.general.dataManagement.repos.scanningRepositories'
+                )}
+              </span>
               <span>{progress}%</span>
             </div>
             <Progress value={progress} />
@@ -109,12 +134,16 @@ export function RepoPathManagement() {
         {/* Actions */}
         <div className="flex flex-wrap gap-2">
           <Button onClick={handleScan} disabled={scanning}>
-            <RefreshCw className={`h-4 w-4 mr-2 ${scanning ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`h-4 w-4 mr-2 ${scanning ? 'animate-spin' : ''}`}
+            />
             {t('settings.general.dataManagement.repos.scanRepositories')}
           </Button>
           {invalidCount > 0 && (
             <Button variant="outline" onClick={handleBatchFix}>
-              {t('settings.general.dataManagement.repos.fixAll', { count: invalidCount })}
+              {t('settings.general.dataManagement.repos.fixAll', {
+                count: invalidCount,
+              })}
             </Button>
           )}
         </div>
@@ -123,14 +152,19 @@ export function RepoPathManagement() {
         {repos.length > 0 && (
           <div className="space-y-2">
             <div className="text-sm font-medium">
-              {t('settings.general.dataManagement.repos.foundRepos', { count: repos.length, invalid: invalidCount })}
+              {t('settings.general.dataManagement.repos.foundRepos', {
+                count: repos.length,
+                invalid: invalidCount,
+              })}
             </div>
             <div className="space-y-2">
               {repos.map((repo) => (
                 <div
                   key={repo.repo_id}
                   className={`p-4 border rounded-lg ${
-                    repo.valid ? 'border-green-500/20 bg-green-500/5' : 'border-red-500/20 bg-red-500/5'
+                    repo.valid
+                      ? 'border-green-500/20 bg-green-500/5'
+                      : 'border-red-500/20 bg-red-500/5'
                   }`}
                 >
                   <div className="flex items-start justify-between">
@@ -143,7 +177,11 @@ export function RepoPathManagement() {
                         )}
                         <span className="font-medium">{repo.repo_name}</span>
                         <Badge variant={repo.valid ? 'default' : 'destructive'}>
-                          {repo.valid ? t('settings.general.dataManagement.repos.valid') : t('settings.general.dataManagement.repos.invalid')}
+                          {repo.valid
+                            ? t('settings.general.dataManagement.repos.valid')
+                            : t(
+                                'settings.general.dataManagement.repos.invalid'
+                              )}
                         </Badge>
                       </div>
                       <div className="text-sm text-muted-foreground mt-1 font-mono">
@@ -156,7 +194,11 @@ export function RepoPathManagement() {
                       )}
                     </div>
                     {!repo.valid && (
-                      <Button variant="outline" size="sm" onClick={() => handleFixPath(repo)}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleFixPath(repo)}
+                      >
                         {t('settings.general.dataManagement.repos.fixPath')}
                       </Button>
                     )}

@@ -84,7 +84,10 @@ function AppContent() {
 
     const showNextStep = async () => {
       // 1) Disclaimer - first step
-      if (!config.disclaimer_acknowledged && !dialogsShownRef.current.disclaimer) {
+      if (
+        !config.disclaimer_acknowledged &&
+        !dialogsShownRef.current.disclaimer
+      ) {
         dialogsShownRef.current.disclaimer = true;
         await DisclaimerDialog.show();
         if (!cancelled) {
@@ -95,7 +98,10 @@ function AppContent() {
       }
 
       // 2) Onboarding - configure executor and editor
-      if (!config.onboarding_acknowledged && !dialogsShownRef.current.onboarding) {
+      if (
+        !config.onboarding_acknowledged &&
+        !dialogsShownRef.current.onboarding
+      ) {
         dialogsShownRef.current.onboarding = true;
         const result = await OnboardingDialog.show();
         if (!cancelled) {
@@ -126,7 +132,7 @@ function AppContent() {
     return () => {
       cancelled = true;
     };
-    // Only run when config first loads or user signs in
+    // We only want to show dialogs once when the app loads or user signs in
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSignedIn]);
 

@@ -1,7 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { toast } from 'sonner';
 import { FolderOpen, RefreshCw, FileText, Trash2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
@@ -32,6 +38,8 @@ export function SessionManagement() {
 
   useEffect(() => {
     loadData();
+    // Only run on mount - loadData is defined locally
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadData = async () => {
@@ -43,11 +51,15 @@ export function SessionManagement() {
       setStats(statsData.data);
 
       // Load sessions
-      const listRes = await fetch('/api/data-management/sessions/list?limit=20&offset=0');
+      const listRes = await fetch(
+        '/api/data-management/sessions/list?limit=20&offset=0'
+      );
       const listData = await listRes.json();
       setSessions(listData.data);
     } catch (error) {
-      toast.error(t('settings.general.dataManagement.toasts.failedToLoadSession'));
+      toast.error(
+        t('settings.general.dataManagement.toasts.failedToLoadSession')
+      );
       console.error(error);
     } finally {
       setLoading(false);
@@ -57,10 +69,15 @@ export function SessionManagement() {
   const handleRescan = async () => {
     setScanning(true);
     try {
-      const res = await fetch('/api/data-management/sessions/rescan', { method: 'PUT' });
+      const res = await fetch('/api/data-management/sessions/rescan', {
+        method: 'PUT',
+      });
       const data = await res.json();
 
-      toast.success(data.data.message || t('settings.general.dataManagement.toasts.scanCompleted'));
+      toast.success(
+        data.data.message ||
+          t('settings.general.dataManagement.toasts.scanCompleted')
+      );
       await loadData();
     } catch (error) {
       toast.error(t('settings.general.dataManagement.toasts.failedToScan'));
@@ -84,13 +101,23 @@ export function SessionManagement() {
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
     } catch (error) {
-      toast.error(t('settings.general.dataManagement.toasts.failedToOpenSession'));
+      toast.error(
+        t('settings.general.dataManagement.toasts.failedToOpenSession')
+      );
       console.error(error);
     }
   };
 
   const handleDeleteSession = async (session: SessionListItem) => {
-    if (!confirm(t('settings.general.dataManagement.toasts.deleteConfirm', { name: session.task_name || t('settings.general.dataManagement.sessions.untitled') }))) {
+    if (
+      !confirm(
+        t('settings.general.dataManagement.toasts.deleteConfirm', {
+          name:
+            session.task_name ||
+            t('settings.general.dataManagement.sessions.untitled'),
+        })
+      )
+    ) {
       return;
     }
 
@@ -118,7 +145,9 @@ export function SessionManagement() {
     return (
       <Card>
         <CardContent className="p-6">
-          <div className="text-center text-muted-foreground">{t('settings.general.dataManagement.errors.loading')}</div>
+          <div className="text-center text-muted-foreground">
+            {t('settings.general.dataManagement.errors.loading')}
+          </div>
         </CardContent>
       </Card>
     );
@@ -129,16 +158,24 @@ export function SessionManagement() {
       {/* Session Directory Info */}
       <Card>
         <CardHeader>
-          <CardTitle>{t('settings.general.dataManagement.sessions.sessionDirectory.title')}</CardTitle>
+          <CardTitle>
+            {t(
+              'settings.general.dataManagement.sessions.sessionDirectory.title'
+            )}
+          </CardTitle>
           <CardDescription>
-            {t('settings.general.dataManagement.sessions.sessionDirectory.description')}
+            {t(
+              'settings.general.dataManagement.sessions.sessionDirectory.description'
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {stats && (
             <>
               <div className="space-y-2">
-                <label className="text-sm font-medium">{t('settings.general.dataManagement.sessions.directoryPath')}</label>
+                <label className="text-sm font-medium">
+                  {t('settings.general.dataManagement.sessions.directoryPath')}
+                </label>
                 <code className="block w-full px-3 py-2 bg-muted rounded-md text-sm">
                   {stats.session_dir}
                 </code>
@@ -147,23 +184,43 @@ export function SessionManagement() {
               <div className="grid grid-cols-3 gap-4">
                 <div>
                   <div className="text-2xl font-bold">{stats.count}</div>
-                  <div className="text-sm text-muted-foreground">{t('settings.general.dataManagement.sessions.sessionFiles')}</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold">{formatSize(stats.total_size)}</div>
-                  <div className="text-sm text-muted-foreground">{t('settings.general.dataManagement.sessions.totalSize')}</div>
+                  <div className="text-sm text-muted-foreground">
+                    {t('settings.general.dataManagement.sessions.sessionFiles')}
+                  </div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold">
-                    {stats.latest ? formatDistanceToNow(new Date(stats.latest), { addSuffix: true }) : t('settings.general.dataManagement.sessions.never')}
+                    {formatSize(stats.total_size)}
                   </div>
-                  <div className="text-sm text-muted-foreground">{t('settings.general.dataManagement.sessions.latestSession')}</div>
+                  <div className="text-sm text-muted-foreground">
+                    {t('settings.general.dataManagement.sessions.totalSize')}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold">
+                    {stats.latest
+                      ? formatDistanceToNow(new Date(stats.latest), {
+                          addSuffix: true,
+                        })
+                      : t('settings.general.dataManagement.sessions.never')}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    {t(
+                      'settings.general.dataManagement.sessions.latestSession'
+                    )}
+                  </div>
                 </div>
               </div>
 
               <div className="flex flex-wrap gap-2">
-                <Button variant="outline" onClick={handleRescan} disabled={scanning}>
-                  <RefreshCw className={`h-4 w-4 mr-2 ${scanning ? 'animate-spin' : ''}`} />
+                <Button
+                  variant="outline"
+                  onClick={handleRescan}
+                  disabled={scanning}
+                >
+                  <RefreshCw
+                    className={`h-4 w-4 mr-2 ${scanning ? 'animate-spin' : ''}`}
+                  />
                   {t('settings.general.dataManagement.sessions.scanSessions')}
                 </Button>
                 <Button variant="outline" onClick={handleOpenFolder}>
@@ -179,8 +236,14 @@ export function SessionManagement() {
       {/* Session Files List */}
       <Card>
         <CardHeader>
-          <CardTitle>{t('settings.general.dataManagement.sessions.savedSessions.title')}</CardTitle>
-          <CardDescription>{t('settings.general.dataManagement.sessions.savedSessions.description')}</CardDescription>
+          <CardTitle>
+            {t('settings.general.dataManagement.sessions.savedSessions.title')}
+          </CardTitle>
+          <CardDescription>
+            {t(
+              'settings.general.dataManagement.sessions.savedSessions.description'
+            )}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {sessions.length === 0 ? (
@@ -198,11 +261,21 @@ export function SessionManagement() {
                     <div className="flex items-center gap-2">
                       <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
                       <div className="font-medium truncate">
-                        {session.project_name || t('settings.general.dataManagement.sessions.unknown')} / {session.task_name || t('settings.general.dataManagement.sessions.untitled')}
+                        {session.project_name ||
+                          t(
+                            'settings.general.dataManagement.sessions.unknown'
+                          )}{' '}
+                        /{' '}
+                        {session.task_name ||
+                          t(
+                            'settings.general.dataManagement.sessions.untitled'
+                          )}
                       </div>
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      {formatDistanceToNow(new Date(session.created_at), { addSuffix: true })}
+                      {formatDistanceToNow(new Date(session.created_at), {
+                        addSuffix: true,
+                      })}
                       {' • '}
                       {formatSize(session.file_size)}
                     </div>

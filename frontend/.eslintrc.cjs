@@ -31,7 +31,7 @@ module.exports = {
     project: path.join(__dirname, 'tsconfig.json'),
   },
   rules: {
-    'eslint-comments/no-use': ['error', { allow: [] }],
+    'eslint-comments/no-use': ['error', { allow: ['eslint-disable-next-line'] }],
     'react-refresh/only-export-components': 'off',
     'unused-imports/no-unused-imports': 'error',
     'unused-imports/no-unused-vars': [

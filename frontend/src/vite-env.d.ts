@@ -3,8 +3,11 @@
 interface Window {
   api?: {
     openPath: (path: string) => void;
-    selectFile?: (options: any) => Promise<string | string[]>;
+    selectFile?: (options: {
+      title?: string;
+      multiple?: boolean;
+      accept?: string;
+    }) => Promise<string | string[]>;
     selectFolder?: (title?: string) => Promise<string>;
   };
 }
-
