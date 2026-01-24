@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { FolderOpen, RefreshCw, FileText, Trash2, Download } from 'lucide-react';
+import { FolderOpen, RefreshCw, FileText, Trash2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 interface SessionStats {

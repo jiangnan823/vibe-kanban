@@ -11,7 +11,20 @@ import { FolderOpen, CheckCircle, XCircle, RefreshCw, FolderOpen as FolderOpenIc
 import { dataStorageApi } from '@/lib/api';
 import { useFilePicker } from '@/hooks';
 import { normalizePath } from '@/lib/pathUtils';
-import type { ConfigSourceInfo } from '@/types';
+
+interface ConfigFileInfo {
+  name: string;
+  exists: boolean;
+}
+
+interface ConfigSourceInfo {
+  current_path: string;
+  default_path?: string;
+  custom_path?: string;
+  session_save_dir?: string | null;
+  is_custom: boolean;
+  files?: ConfigFileInfo[];
+}
 
 export function ConfigSourceManagement() {
   const { t } = useTranslation();
@@ -30,7 +43,14 @@ export function ConfigSourceManagement() {
   const loadConfigInfo = async () => {
     try {
       const info = await dataStorageApi.getPathConfig();
-      setConfigInfo(info);
+      setConfigInfo({
+        current_path: info.current_path,
+        default_path: info.default_path,
+        custom_path: info.custom_path || undefined,
+        session_save_dir: info.session_save_dir || undefined,
+        is_custom: info.is_custom,
+        files: []
+      });
     } catch (error) {
       toast.error(t('settings.general.dataManagement.toasts.failedToLoadConfig'));
       console.error(error);
@@ -142,7 +162,8 @@ export function ConfigSourceManagement() {
   }
 
   const getFileStatus = (fileName: string) => {
-    const file = configInfo.files.find((f) => f.name === fileName);
+    if (!configInfo.files) return false;
+    const file = configInfo.files.find((f: any) => f.name === fileName);
     return file?.exists ?? false;
   };
 
@@ -181,24 +202,26 @@ export function ConfigSourceManagement() {
           </div>
 
           {/* Files Status */}
-          <div className="space-y-2">
-            <Label>{t('settings.general.dataManagement.configSource.configurationFiles')}</Label>
+          {configInfo.files && (
             <div className="space-y-2">
-              {['config.json', 'profiles.json', 'custom_path.json'].map((file) => {
-                const exists = getFileStatus(file);
-                return (
-                  <div key={file} className="flex items-center gap-2 text-sm">
-                    {exists ? (
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                    ) : (
-                      <XCircle className="h-4 w-4 text-red-500" />
-                    )}
-                    <span>{file}</span>
-                  </div>
-                );
-              })}
+              <Label>{t('settings.general.dataManagement.configSource.configurationFiles')}</Label>
+              <div className="space-y-2">
+                {['config.json', 'profiles.json', 'custom_path.json'].map((file) => {
+                  const exists = getFileStatus(file);
+                  return (
+                    <div key={file} className="flex items-center gap-2 text-sm">
+                      {exists ? (
+                        <CheckCircle className="h-4 w-4 text-green-500" />
+                      ) : (
+                        <XCircle className="h-4 w-4 text-red-500" />
+                      )}
+                      <span>{file}</span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Actions */}
           <div className="flex flex-wrap gap-2">
@@ -245,7 +268,7 @@ export function ConfigSourceManagement() {
           <div className="rounded-lg bg-muted p-4 text-sm space-y-2">
             <p className="font-medium">{t('settings.general.dataManagement.configSource.requirements')}</p>
             <ul className="list-disc list-inside text-muted-foreground space-y-1">
-              {t('settings.general.dataManagement.configSource.requirementsList', { returnObjects: true }).map((item: string, i: number) => (
+              {(t('settings.general.dataManagement.configSource.requirementsList', { returnObjects: true }) as string[]).map((item: string, i: number) => (
                 <li key={i}>{item}</li>
               ))}
             </ul>
@@ -294,7 +317,7 @@ export function ConfigSourceManagement() {
           <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-sm dark:border-yellow-800 dark:bg-yellow-950">
             <p className="font-medium text-yellow-800 dark:text-yellow-200">{t('settings.general.dataManagement.configSource.important')}</p>
             <ul className="list-disc list-inside text-yellow-700 dark:text-yellow-300 mt-2 space-y-1">
-              {t('settings.general.dataManagement.configSource.importantList', { returnObjects: true }).map((item: string, i: number) => (
+              {(t('settings.general.dataManagement.configSource.importantList', { returnObjects: true }) as string[]).map((item: string, i: number) => (
                 <li key={i}>{item}</li>
               ))}
             </ul>

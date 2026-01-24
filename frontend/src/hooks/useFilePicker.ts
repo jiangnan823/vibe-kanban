@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export type FilePickerMode = 'file' | 'folder' | 'file-folder';
@@ -27,7 +27,6 @@ export interface UseFilePickerReturn {
  */
 export function useFilePicker(): UseFilePickerReturn {
   const { t } = useTranslation('filePicker');
-  const inputRef = useRef<HTMLInputElement | null>(null);
 
   // Check if native file system access API is supported
   const isFsApiSupported = 'showOpenFilePicker' in window || 'showDirectoryPicker' in window;
@@ -93,8 +92,8 @@ export function useFilePicker(): UseFilePickerReturn {
               multiple,
               types: accept !== '*' ? [{
                 description: 'Files',
-                accept: { [accept.split(',')[0]: accept } }
-              ] : undefined
+                accept: { [accept.split(',')[0]]: accept }
+              }] : undefined
             });
             return multiple ? handles.map((h: any) => h.name) : handles[0].name;
           }

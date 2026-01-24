@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Download, Upload, FileDown, Package } from 'lucide-react';
+import { Download, Upload, Package } from 'lucide-react';
 
 export function ImportExportManagement() {
   const { t } = useTranslation();
@@ -286,7 +286,7 @@ export function ImportExportManagement() {
           <div className="rounded-lg bg-muted p-4 text-sm space-y-2">
             <p className="font-medium">{t('settings.general.dataManagement.importExport.importConfig.note')}</p>
             <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-              {t('settings.general.dataManagement.importExport.importConfig.noteList', { returnObjects: true }).map((item: string, i: number) => (
+              {(t('settings.general.dataManagement.importExport.importConfig.noteList', { returnObjects: true }) as string[]).map((item: string, i: number) => (
                 <li key={i}>{item}</li>
               ))}
             </ul>

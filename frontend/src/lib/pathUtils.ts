@@ -74,7 +74,7 @@ export function normalizePath(path: string, targetPlatform?: Platform): string {
  * @param toPlatform - Target platform
  * @returns Converted path
  */
-export function convertPath(path: string, fromPlatform: Platform, toPlatform: Platform): string {
+export function convertPath(path: string, _fromPlatform: Platform, toPlatform: Platform): string {
   if (!path) return '';
 
   // First normalize to internal format (forward slashes)

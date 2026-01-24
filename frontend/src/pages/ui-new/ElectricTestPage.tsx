@@ -132,8 +132,6 @@ function DataTable<T extends Record<string, unknown>>({
   selectedId?: string;
   getRowId: (item: T) => string;
 }) {
-  const { t } = useTranslation('electric');
-
   if (data.length === 0) {
     return <NoDataState />;
   }

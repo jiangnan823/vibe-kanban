@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Database, FolderOpen, GitBranch, Download, Upload } from 'lucide-react';
+import { Database, FolderOpen, GitBranch, Download } from 'lucide-react';
 
 import { ConfigSourceManagement } from './data-management/ConfigSourceManagement';
 import { SessionManagement } from './data-management/SessionManagement';
