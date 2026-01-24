@@ -1,0 +1,5 @@
+{
+  "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+  "unlinkFailed": "Failed to unlink project",
+  "unlinkConfirm": "Are you sure you want to unlink \"{{name}}\"? The local project will remain, but it will no longer be linked to the remote project."
+}

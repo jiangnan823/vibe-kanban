@@ -1,0 +1,22 @@
+{
+  "status": {
+    "deleted": "Deleted",
+    "renamed": "Renamed",
+    "copied": "Copied",
+    "permissionChanged": "Permission Changed"
+  },
+  "actions": {
+    "collapse": "Collapse",
+    "expand": "Expand",
+    "openInIDE": "Open in IDE"
+  },
+  "messages": {
+    "contentOmitted": "Content omitted due to file size. Open in editor to view.",
+    "renamedNoChanges": "File renamed with no content changes.",
+    "permissionChanged": "File permission changed.",
+    "noChanges": "No content changes to display."
+  },
+  "errors": {
+    "renderFailed": "Failed to render diff for this file."
+  }
+}

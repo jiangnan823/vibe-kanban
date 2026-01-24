@@ -1,0 +1,14 @@
+{
+  "diffViewMode": "差异视图模式",
+  "inlineView": "内联视图",
+  "splitView": "分割视图",
+  "joinDiscord": "加入我们的Discord",
+  "createTask": "创建新任务",
+  "settings": "设置",
+  "mainNav": "主导航",
+  "deleteRepository": "删除仓库",
+  "revokeInvitation": "撤销邀请",
+  "releaseNotes": "发布说明",
+  "attachImage": "附加图片",
+  "insertPrComment": "插入PR评论"
+}

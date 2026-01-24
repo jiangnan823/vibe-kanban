@@ -1,0 +1,6 @@
+{
+  "placeholder": {
+    "default": "搜索...",
+    "withProject": "搜索 {{projectName}}..."
+  }
+}

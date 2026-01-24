@@ -1,0 +1,14 @@
+{
+  "diffViewMode": "Diff view mode",
+  "inlineView": "Inline view",
+  "splitView": "Split view",
+  "joinDiscord": "Join our Discord",
+  "createTask": "Create new task",
+  "settings": "Settings",
+  "mainNav": "Main navigation",
+  "deleteRepository": "Delete repository",
+  "revokeInvitation": "Revoke invitation",
+  "releaseNotes": "Release Notes",
+  "attachImage": "Attach image",
+  "insertPrComment": "Insert PR comment"
+}

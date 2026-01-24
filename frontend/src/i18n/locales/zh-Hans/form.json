@@ -1,0 +1,16 @@
+{
+  "select": {
+    "notSpecified": "未指定",
+    "placeholder": "选择一个选项..."
+  },
+  "array": {
+    "addItem": "添加项目",
+    "removeItem": "移除项目"
+  },
+  "keyValue": {
+    "envKeyLabel": "环境变量键",
+    "newEnvKeyPlaceholder": "新环境变量键",
+    "newEnvValuePlaceholder": "新环境变量值",
+    "addButton": "添加环境变量"
+  }
+}

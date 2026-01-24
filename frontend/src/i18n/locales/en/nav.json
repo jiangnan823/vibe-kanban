@@ -1,0 +1,8 @@
+{
+  "projects": "Projects",
+  "docs": "Docs",
+  "support": "Support",
+  "discord": "Discord",
+  "online": "online",
+  "onlineCount": "{{count}} online"
+}

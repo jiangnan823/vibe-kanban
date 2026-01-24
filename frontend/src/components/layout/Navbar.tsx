@@ -41,21 +41,21 @@ import { OAuthDialog } from '@/components/dialogs/global/OAuthDialog';
 import { useUserSystem } from '@/components/ConfigProvider';
 import { oauthApi } from '@/lib/api';
 
-const INTERNAL_NAV = [{ label: 'Projects', icon: FolderOpen, to: '/projects' }];
+const INTERNAL_NAV = [{ label: 'nav.projects', icon: FolderOpen, to: '/projects' }];
 
 const EXTERNAL_LINKS = [
   {
-    label: 'Docs',
+    label: 'nav.docs',
     icon: BookOpen,
     href: 'https://vibekanban.com/docs',
   },
   {
-    label: 'Support',
+    label: 'nav.support',
     icon: MessageCircleQuestion,
     href: 'https://github.com/BloopAI/vibe-kanban/issues',
   },
   {
-    label: 'Discord',
+    label: 'nav.discord',
     icon: MessageCircle,
     href: 'https://discord.gg/AC4nwVtJM3',
   },
@@ -89,7 +89,7 @@ export function Navbar() {
     },
     [registerInputRef]
   );
-  const { t } = useTranslation(['tasks', 'common']);
+  const { t } = useTranslation(['tasks', 'common', 'nav', 'aria']);
   // Navbar is global, but the share tasks toggle only makes sense on the tasks route
   const isTasksRoute = /^\/projects\/[^/]+\/tasks/.test(location.pathname);
   const showSharedTasks = searchParams.get('shared') !== 'off';
@@ -167,8 +167,8 @@ export function Navbar() {
                 aria-live="polite"
               >
                 {onlineCount != null
-                  ? `${onlineCount.toLocaleString()} online`
-                  : 'online'}
+                  ? t('nav.onlineCount', { count: onlineCount })
+                  : t('nav.online')}
               </span>
             </a>
           </div>
@@ -224,7 +224,7 @@ export function Navbar() {
                     size="icon"
                     className="h-9 w-9"
                     onClick={handleCreateTask}
-                    aria-label="Create new task"
+                    aria-label={t('aria:createTask')}
                   >
                     <Plus className="h-4 w-4" />
                   </Button>
@@ -247,7 +247,7 @@ export function Navbar() {
                 size="icon"
                 className="h-9 w-9"
                 asChild
-                aria-label="Settings"
+                aria-label={t('aria:settings')}
               >
                 <Link
                   to={
@@ -266,7 +266,7 @@ export function Navbar() {
                     variant="ghost"
                     size="icon"
                     className="h-9 w-9"
-                    aria-label="Main navigation"
+                    aria-label={t('aria:mainNav')}
                   >
                     <Menu className="h-4 w-4" />
                   </Button>
@@ -284,7 +284,7 @@ export function Navbar() {
                       >
                         <Link to={item.to}>
                           <Icon className="mr-2 h-4 w-4" />
-                          {item.label}
+                          {t(item.label)}
                         </Link>
                       </DropdownMenuItem>
                     );
@@ -302,7 +302,7 @@ export function Navbar() {
                           rel="noopener noreferrer"
                         >
                           <Icon className="mr-2 h-4 w-4" />
-                          {item.label}
+                          {t(item.label)}
                         </a>
                       </DropdownMenuItem>
                     );
@@ -318,7 +318,7 @@ export function Navbar() {
                   ) : (
                     <DropdownMenuItem onSelect={handleOpenOAuth}>
                       <LogIn className="mr-2 h-4 w-4" />
-                      Sign in
+                      {t('common:oauth.title')}
                     </DropdownMenuItem>
                   )}
                 </DropdownMenuContent>

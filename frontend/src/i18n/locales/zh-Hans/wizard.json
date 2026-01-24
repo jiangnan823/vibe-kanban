@@ -1,0 +1,15 @@
+{
+  "error": {
+    "selectFolderFailed": "选择文件夹失败",
+    "invalidConfig": "配置无效：{{issues}}",
+    "validationFailed": "配置验证失败",
+    "invalidDirectory": "请选择有效的配置目录",
+    "applyFailed": "应用配置失败"
+  },
+  "prompt": {
+    "configPath": "输入配置目录的完整路径："
+  },
+  "success": {
+    "configApplied": "配置应用成功！"
+  }
+}

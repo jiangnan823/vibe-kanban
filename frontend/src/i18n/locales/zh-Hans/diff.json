@@ -1,0 +1,22 @@
+{
+  "status": {
+    "deleted": "已删除",
+    "renamed": "已重命名",
+    "copied": "已复制",
+    "permissionChanged": "权限已更改"
+  },
+  "actions": {
+    "collapse": "折叠",
+    "expand": "展开",
+    "openInIDE": "在IDE中打开"
+  },
+  "messages": {
+    "contentOmitted": "由于文件大小，内容已省略。在编辑器中打开以查看。",
+    "renamedNoChanges": "文件已重命名，无内容更改。",
+    "permissionChanged": "文件权限已更改。",
+    "noChanges": "无内容更改显示。"
+  },
+  "errors": {
+    "renderFailed": "无法呈现此文件的差异。"
+  }
+}

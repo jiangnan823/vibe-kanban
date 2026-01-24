@@ -1,0 +1,28 @@
+{
+  "syncError": "同步错误",
+  "loadingProjects": "正在加载项目...",
+  "synced": "已同步",
+  "table": {
+    "name": "名称",
+    "id": "ID",
+    "updated": "更新时间",
+    "type": "类型",
+    "seen": "已查看",
+    "created": "创建时间",
+    "title": "标题",
+    "priority": "优先级",
+    "archived": "已归档",
+    "filesChanged": "文件更改",
+    "order": "顺序",
+    "issueId": "问题ID",
+    "userId": "用户ID",
+    "assigned": "已分配",
+    "tagId": "标签ID",
+    "relatedIssue": "相关问题",
+    "message": "消息",
+    "author": "作者",
+    "emoji": "表情符号",
+    "comment": "评论",
+    "user": "用户"
+  }
+}

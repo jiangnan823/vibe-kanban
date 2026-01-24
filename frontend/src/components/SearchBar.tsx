@@ -3,6 +3,7 @@ import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { Project } from 'shared/types';
+import { useTranslation } from 'react-i18next';
 
 interface SearchBarProps {
   className?: string;
@@ -15,6 +16,8 @@ interface SearchBarProps {
 
 export const SearchBar = React.forwardRef<HTMLInputElement, SearchBarProps>(
   ({ className, value = '', onChange, disabled = false, project }, ref) => {
+    const { t } = useTranslation('search');
+
     if (disabled) {
       return null;
     }
@@ -27,7 +30,7 @@ export const SearchBar = React.forwardRef<HTMLInputElement, SearchBarProps>(
           value={value}
           onChange={(e) => onChange?.(e.target.value)}
           disabled={disabled}
-          placeholder={project ? `Search ${project.name}...` : 'Search...'}
+          placeholder={project ? t('placeholder.withProject', { projectName: project.name }) : t('placeholder.default')}
           className="pl-8 pr-14 h-8 bg-muted"
         />
       </div>

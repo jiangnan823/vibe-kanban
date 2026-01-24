@@ -1,0 +1,8 @@
+{
+  "edit": "编辑",
+  "delete": "删除",
+  "format": {
+    "strikethrough": "删除线",
+    "inlineCode": "行内代码"
+  }
+}

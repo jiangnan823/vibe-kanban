@@ -1,0 +1,8 @@
+{
+  "confirmButton": {
+    "default": "确认"
+  },
+  "cancelButton": {
+    "default": "取消"
+  }
+}

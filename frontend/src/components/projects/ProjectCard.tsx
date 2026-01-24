@@ -41,7 +41,7 @@ function ProjectCard({ project, isFocused, setError, onEdit }: Props) {
   const navigate = useNavigateWithSearch();
   const ref = useRef<HTMLDivElement>(null);
   const handleOpenInEditor = useOpenProjectInEditor(project);
-  const { t } = useTranslation('projects');
+  const { t } = useTranslation(['projects', 'common', 'project']);
 
   const { data: repos } = useProjectRepos(project.id);
   const isSingleRepoProject = repos?.length === 1;
@@ -49,7 +49,7 @@ function ProjectCard({ project, isFocused, setError, onEdit }: Props) {
   const { unlinkProject } = useProjectMutations({
     onUnlinkError: (error) => {
       console.error('Failed to unlink project:', error);
-      setError('Failed to unlink project');
+      setError(t('project:unlinkFailed'));
     },
   });
 
@@ -61,18 +61,14 @@ function ProjectCard({ project, isFocused, setError, onEdit }: Props) {
   }, [isFocused]);
 
   const handleDelete = async (id: string, name: string) => {
-    if (
-      !confirm(
-        `Are you sure you want to delete "${name}"? This action cannot be undone.`
-      )
-    )
+    if (!confirm(t('project:deleteConfirm', { name })))
       return;
 
     try {
       await projectsApi.delete(id);
     } catch (error) {
       console.error('Failed to delete project:', error);
-      setError('Failed to delete project');
+      setError(t('projects:errors.deleteFailed'));
     }
   };
 
@@ -97,7 +93,7 @@ function ProjectCard({ project, isFocused, setError, onEdit }: Props) {
 
   const handleUnlinkProject = () => {
     const confirmed = window.confirm(
-      `Are you sure you want to unlink "${project.name}"? The local project will remain, but it will no longer be linked to the remote project.`
+      t('project:unlinkConfirm', { name: project.name })
     );
     if (confirmed) {
       unlinkProject.mutate(project.id);

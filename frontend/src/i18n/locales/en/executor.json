@@ -1,0 +1,6 @@
+{
+  "config": {
+    "schemaNotFound": "Schema not found for executor type: {{executor}}",
+    "saveButton": "Save Configuration"
+  }
+}

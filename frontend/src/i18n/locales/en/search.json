@@ -1,0 +1,6 @@
+{
+  "placeholder": {
+    "default": "Search...",
+    "withProject": "Search {{projectName}}..."
+  }
+}

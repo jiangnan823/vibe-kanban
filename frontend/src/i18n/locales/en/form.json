@@ -1,0 +1,16 @@
+{
+  "select": {
+    "notSpecified": "Not specified",
+    "placeholder": "Select an option..."
+  },
+  "array": {
+    "addItem": "Add Item",
+    "removeItem": "Remove item"
+  },
+  "keyValue": {
+    "envKeyLabel": "Environment variable key",
+    "newEnvKeyPlaceholder": "New environment variable key",
+    "newEnvValuePlaceholder": "New environment variable value",
+    "addButton": "Add environment variable"
+  }
+}

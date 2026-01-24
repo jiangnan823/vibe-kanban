@@ -1,0 +1,78 @@
+{
+  "loading": {
+    "checkingConfiguration": "Checking configuration..."
+  },
+  "progress": {
+    "welcome": "1. Welcome",
+    "setup": "2. Setup",
+    "complete": "3. Complete"
+  },
+  "welcome": {
+    "title": "Welcome to Vibe Kanban",
+    "firstRunDescription": "Let's get you set up with your configuration",
+    "fixConfigDescription": "Let's fix your configuration issues",
+    "issues": {
+      "title": "Configuration Issues:",
+      "label": "Configuration Issues:"
+    },
+    "suggestedActions": {
+      "title": "Suggested Actions:"
+    },
+    "options": {
+      "useDefault": {
+        "title": "Use Default Configuration",
+        "description": "Start with default settings. You can customize later in Settings."
+      },
+      "useExisting": {
+        "title": "Use Existing Configuration",
+        "description": "Import from another device or use a shared configuration directory."
+      }
+    }
+  },
+  "setup": {
+    "title": "Select Configuration Directory",
+    "description": "Choose a directory containing your config.json file",
+    "requirements": {
+      "title": "Requirements:",
+      "configJson": "The directory must contain a config.json file",
+      "profilesJson": "Optional: profiles.json for agent configurations",
+      "customPathJson": "Optional: custom_path.json for custom paths"
+    },
+    "configPath": "Configuration Path",
+    "configPathPlaceholder": "/path/to/config/directory",
+    "validDirectory": "Valid configuration directory",
+    "invalidDirectory": "Invalid configuration directory",
+    "copyDefaultConfig": "Copy default configurations to this location",
+    "buttons": {
+      "back": "Back",
+      "applyConfiguration": "Apply Configuration",
+      "applying": "Applying..."
+    }
+  },
+  "complete": {
+    "title": "Setup Complete!",
+    "defaultDescription": "Default configuration has been applied",
+    "customDescription": "Your configuration has been applied successfully",
+    "whatsNext": {
+      "title": "What's Next:",
+      "exploreProjects": "Explore your projects and tasks",
+      "customizeSettings": "Customize your settings in the Settings page",
+      "saveSessions": "Save sessions to keep track of your work",
+      "configureRepos": "Configure repository paths for your projects"
+    },
+    "getStarted": "Get Started"
+  },
+  "error": {
+    "selectFolderFailed": "Failed to select folder",
+    "invalidConfig": "Invalid config: {{issues}}",
+    "validationFailed": "Failed to validate configuration",
+    "invalidDirectory": "Please select a valid configuration directory",
+    "applyFailed": "Failed to apply configuration"
+  },
+  "prompt": {
+    "configPath": "Enter the full path to the configuration directory:"
+  },
+  "success": {
+    "configApplied": "Configuration applied successfully!"
+  }
+}

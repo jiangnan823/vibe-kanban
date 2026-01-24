@@ -1,0 +1,8 @@
+{
+  "confirmButton": {
+    "default": "Confirm"
+  },
+  "cancelButton": {
+    "default": "Cancel"
+  }
+}

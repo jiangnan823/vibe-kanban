@@ -1,0 +1,28 @@
+{
+  "syncError": "Sync Error",
+  "loadingProjects": "Loading projects...",
+  "synced": "synced",
+  "table": {
+    "name": "Name",
+    "id": "ID",
+    "updated": "Updated",
+    "type": "Type",
+    "seen": "Seen",
+    "created": "Created",
+    "title": "Title",
+    "priority": "Priority",
+    "archived": "Archived",
+    "filesChanged": "Files Changed",
+    "order": "Order",
+    "issueId": "Issue ID",
+    "userId": "User ID",
+    "assigned": "Assigned",
+    "tagId": "Tag ID",
+    "relatedIssue": "Related Issue",
+    "message": "Message",
+    "author": "Author",
+    "emoji": "Emoji",
+    "comment": "Comment",
+    "user": "User"
+  }
+}

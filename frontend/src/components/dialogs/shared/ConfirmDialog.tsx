@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { AlertTriangle, Info, CheckCircle, XCircle } from 'lucide-react';
 import { defineModal, type ConfirmResult } from '@/lib/modals';
+import { useTranslation } from 'react-i18next';
 
 export interface ConfirmDialogProps {
   title: string;
@@ -22,11 +23,12 @@ export interface ConfirmDialogProps {
 
 const ConfirmDialogImpl = NiceModal.create<ConfirmDialogProps>((props) => {
   const modal = useModal();
+  const { t } = useTranslation('dialog');
   const {
     title,
     message,
-    confirmText = 'Confirm',
-    cancelText = 'Cancel',
+    confirmText = t('confirmButton.default'),
+    cancelText = t('cancelButton.default'),
     variant = 'default',
     icon = true,
   } = props;

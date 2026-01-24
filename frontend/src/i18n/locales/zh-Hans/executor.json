@@ -1,0 +1,6 @@
+{
+  "config": {
+    "schemaNotFound": "未找到执行器类型的架构：{{executor}}",
+    "saveButton": "保存配置"
+  }
+}

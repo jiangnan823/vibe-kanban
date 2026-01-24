@@ -1,0 +1,5 @@
+{
+  "deleteConfirm": "确定要删除 \"{{name}}\" 吗？此操作无法撤销。",
+  "unlinkFailed": "取消项目链接失败",
+  "unlinkConfirm": "确定要取消链接 \"{{name}}\" 吗？本地项目将保留，但不再链接到远程项目。"
+}

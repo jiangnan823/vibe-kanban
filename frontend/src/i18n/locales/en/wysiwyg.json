@@ -1,0 +1,8 @@
+{
+  "edit": "Edit",
+  "delete": "Delete",
+  "format": {
+    "strikethrough": "Strikethrough",
+    "inlineCode": "Inline Code"
+  }
+}
