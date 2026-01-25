@@ -129,7 +129,7 @@ export function useFilePicker(): UseFilePickerReturn {
                       description: string;
                       accept: Record<string, string>;
                     }>;
-                  }) => Promise<Array<{ name: string }>[]>;
+                  }) => Promise<Array<{ name: string }>>;
                 }
               ).showOpenFilePicker({
                 title,

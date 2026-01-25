@@ -106,3 +106,8 @@ test-*.sh
 
 # Knowledge base (local reference only)
 knowledge-base/
+
+# Compilation temporary files
+compile-output.log
+nasm-*.zip
+nasm-temp/
