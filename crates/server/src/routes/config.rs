@@ -32,7 +32,7 @@ use services::services::{
 use tokio::fs;
 use ts_rs::TS;
 use utils::{api::oauth::LoginStatus, assets::config_path, response::ApiResponse};
-use utils::assets::{custom_path_config_file, load_custom_path_config, CustomPathConfig};
+use utils::assets::{custom_path_config_file, load_custom_path_config};
 use utils::log_msg::LogMsg;
 use uuid::Uuid;
 

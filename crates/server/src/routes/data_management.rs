@@ -1,6 +1,5 @@
 use axum::{extract::{Query, State}, Json, Router};
-use axum::body::Body;
-use axum::http::{header, HeaderMap, HeaderValue, StatusCode};
+use axum::http::{header, HeaderMap, HeaderValue};
 use axum::response::{IntoResponse, Response};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
@@ -522,7 +521,6 @@ pub async fn export_sessions(
     Query(params): Query<ExportSessionsQuery>,
 ) -> Result<Response, ApiError> {
     use zip::{ZipWriter, write::FileOptions};
-    use zip::result::ZipResult;
     use std::fs::File;
 
     // Get sessions to export
@@ -573,7 +571,7 @@ pub async fn export_sessions(
     let mut buffer = Cursor::new(Vec::new());
     {
         let mut zip = ZipWriter::new(&mut buffer);
-        let options = FileOptions::default()
+        let options = FileOptions::<()>::default()
             .compression_method(zip::CompressionMethod::Deflated)
             .unix_permissions(0o755);
 
