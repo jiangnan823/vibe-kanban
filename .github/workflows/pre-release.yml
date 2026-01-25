@@ -386,6 +386,8 @@ jobs:
         env:
           RCODESIGN_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
         run: |
+          # Remove old rcodesign config if exists
+          rm -f ~/.rcodesign/config.toml ~/.config/rcodesign/config.toml
           rcodesign sign --p12-file certificate.p12 --code-signature-flags=runtime \
             target/${{ matrix.target }}/release/server vibe-kanban
 
@@ -398,6 +400,8 @@ jobs:
         env:
           RCODESIGN_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
         run: |
+          # Remove old rcodesign config if exists
+          rm -f ~/.rcodesign/config.toml ~/.config/rcodesign/config.toml
           rcodesign sign --p12-file certificate.p12 --code-signature-flags=runtime \
             target/${{ matrix.target }}/release/mcp_task_server vibe-kanban-mcp
 
@@ -410,6 +414,8 @@ jobs:
         env:
           RCODESIGN_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
         run: |
+          # Remove old rcodesign config if exists
+          rm -f ~/.rcodesign/config.toml ~/.config/rcodesign/config.toml
           rcodesign sign --p12-file certificate.p12 --code-signature-flags=runtime \
             target/${{ matrix.target }}/release/review vibe-kanban-review
 
