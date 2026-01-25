@@ -176,7 +176,7 @@ impl RepoPathValidator {
             results.push(RepoValidationInfo {
                 repo_id: repo.id,
                 repo_name: repo.name.clone(),
-                path: repo.path.clone(),
+                path: repo.path.to_string_lossy().to_string(),
                 valid,
                 error,
             });
