@@ -1,6 +1,6 @@
 use axum::{extract::{Query, State}, Json, Router};
 use axum::body::Body;
-use axum::http::{header, HeaderMap, StatusCode};
+use axum::http::{header, HeaderMap, HeaderValue, StatusCode};
 use axum::response::{IntoResponse, Response};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
@@ -9,6 +9,7 @@ use std::path::PathBuf;
 use std::io::{Cursor, Read, Write};
 
 use crate::{DeploymentImpl, error::ApiError};
+use deployment::Deployment;
 use utils::response::ApiResponse;
 
 // ===== Session Statistics =====
@@ -378,13 +379,13 @@ pub async fn import_config(
 
     // 1. Read uploaded file
     let mut data = Vec::new();
-    while let Some(mut field) = multipart.next_field().await
+    while let Some(field) = multipart.next_field().await
         .map_err(|e| ApiError::BadRequest(format!("Failed to read multipart: {}", e)))?
     {
-        if field.name() == Some("config_file".to_string()) {
-            let mut reader = field.into_reader();
-            reader.read_to_end(&mut data)
-                .map_err(|e| ApiError::BadRequest(format!("Failed to read file: {}", e)))?;
+        if field.name() == Some("config_file") {
+            let bytes = field.bytes().await
+                .map_err(|e| ApiError::BadRequest(format!("Failed to read field bytes: {}", e)))?;
+            data.extend_from_slice(&bytes);
         }
     }
 
@@ -398,18 +399,20 @@ pub async fn import_config(
     }
 
     let mut result = serde_json::json!({
-        "imported": Vec::<String>::new(),
-        "skipped": Vec::<String>::new(),
-        "errors": Vec::<String>::new(),
+        "imported": Vec::<serde_json::Value>::new(),
+        "skipped": Vec::<serde_json::Value>::new(),
+        "errors": Vec::<serde_json::Value>::new(),
     });
 
     // 4. Import configuration
     if let Some(config) = import_data.get("config") {
         if params.overwrite_config.unwrap_or(false) {
             let config_json = utils::assets::config_path();
-            std::fs::write(&config_json, serde_json::to_string_pretty(config)?)
+            let config_str = serde_json::to_string_pretty(config)
+                .map_err(|e| ApiError::BadRequest(format!("Failed to serialize config: {}", e)))?;
+            std::fs::write(&config_json, config_str)
                 .map_err(|e| ApiError::BadRequest(format!("Failed to write config: {}", e)))?;
-            result["imported"].as_array_mut().unwrap().push("config.json".to_string());
+            result["imported"].as_array_mut().unwrap().push(serde_json::Value::String("config.json".to_string()));
         }
     }
 
@@ -417,9 +420,11 @@ pub async fn import_config(
     if let Some(profiles) = import_data.get("profiles") {
         if params.overwrite_config.unwrap_or(false) {
             let profiles_json = utils::assets::profiles_path();
-            std::fs::write(&profiles_json, serde_json::to_string_pretty(profiles)?)
+            let profiles_str = serde_json::to_string_pretty(profiles)
+                .map_err(|e| ApiError::BadRequest(format!("Failed to serialize profiles: {}", e)))?;
+            std::fs::write(&profiles_json, profiles_str)
                 .map_err(|e| ApiError::BadRequest(format!("Failed to write profiles: {}", e)))?;
-            result["imported"].as_array_mut().unwrap().push("profiles.json".to_string());
+            result["imported"].as_array_mut().unwrap().push(serde_json::Value::String("profiles.json".to_string()));
         }
     }
 
@@ -436,7 +441,7 @@ pub async fn import_config(
                             .map_err(|e| ApiError::BadRequest(format!("Failed to check project: {}", e)))?;
 
                         if exists.is_some() {
-                            result["skipped"].as_array_mut().unwrap().push(format!("project: {}", project_name));
+                            result["skipped"].as_array_mut().unwrap().push(serde_json::Value::String(format!("project: {}", project_name)));
                             continue;
                         }
                     }
@@ -458,7 +463,7 @@ pub async fn import_config(
                     .await
                     .map_err(|e| ApiError::BadRequest(format!("Failed to create project: {}", e)))?;
 
-                    result["imported"].as_array_mut().unwrap().push(format!("project: {}", project_name));
+                    result["imported"].as_array_mut().unwrap().push(serde_json::Value::String(format!("project: {}", project_name)));
                 }
             }
         }
@@ -479,7 +484,7 @@ pub async fn import_config(
                             // Update existing tag
                             // (Implementation skipped for brevity)
                         }
-                        result["skipped"].as_array_mut().unwrap().push(format!("tag: {}", tag_name));
+                        result["skipped"].as_array_mut().unwrap().push(serde_json::Value::String(format!("tag: {}", tag_name)));
                     } else {
                         // Create new tag
                         let id = Uuid::new_v4();
@@ -495,7 +500,7 @@ pub async fn import_config(
                         .await
                         .map_err(|e| ApiError::BadRequest(format!("Failed to create tag: {}", e)))?;
 
-                        result["imported"].as_array_mut().unwrap().push(format!("tag: {}", tag_name));
+                        result["imported"].as_array_mut().unwrap().push(serde_json::Value::String(format!("tag: {}", tag_name)));
                     }
                 }
             }
@@ -563,7 +568,7 @@ pub async fn export_sessions(
     };
 
     if sessions_to_export.is_empty() {
-        return Ok(Json(ApiResponse::error("No sessions to export".to_string())).into_response());
+        return Ok(Json(ApiResponse::error("No sessions to export")).into_response());
     }
 
     // Create ZIP in memory
@@ -648,10 +653,11 @@ pub async fn export_sessions(
     // Return ZIP file as response
     let zip_bytes = buffer.into_inner();
     let headers = HeaderMap::from_iter([
-        (header::CONTENT_TYPE, "application/zip".to_string()),
+        (header::CONTENT_TYPE, HeaderValue::from_static("application/zip")),
         (
             header::CONTENT_DISPOSITION,
-            format!("attachment; filename=\"{}\"", filename),
+            HeaderValue::from_str(&format!("attachment; filename=\"{}\"", filename))
+                .map_err(|e| ApiError::BadRequest(format!("Invalid header value: {}", e)))?,
         ),
     ]);
 
@@ -863,9 +869,9 @@ pub async fn switch_config_source(
     // Update custom_path.json to point to new directory
     let custom_path_file = utils::assets::custom_path_config_file();
     let custom_path_config = utils::assets::CustomPathConfig {
-        custom_asset_dir: Some(req.path.clone()),
+        custom_asset_dir: Some(req.path.clone().into()),
         session_save_dir: None,
-        auto_reload: None,
+        auto_reload: false,
         last_verified: None,
     };
 
