@@ -125,10 +125,7 @@ impl SessionExporter {
         md.push_str(&format!("- **Status**: {}\n", task.status));
         md.push_str(&format!("- **Created**: {}\n", task.created_at.format("%Y-%m-%d %H:%M:%S")));
         md.push_str(&format!("- **Updated**: {}\n", task.updated_at.format("%Y-%m-%d %H:%M:%S")));
-
-        if let Some(Some(branch)) = &workspace.branch {
-            md.push_str(&format!("- **Branch**: {}\n", branch));
-        }
+        md.push_str(&format!("- **Branch**: {}\n", workspace.branch));
 
         if let Some(name) = &workspace.name {
             md.push_str(&format!("- **Workspace**: {}\n", name));
