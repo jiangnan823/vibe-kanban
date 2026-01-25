@@ -50,13 +50,16 @@ impl Tag {
     }
 
     pub async fn find_by_tag_name(pool: &SqlitePool, tag_name: &str) -> Result<Option<Self>, sqlx::Error> {
-        sqlx::query_as!(
-            Tag,
-            r#"SELECT id as "id!: Uuid", tag_name, content as "content!", created_at as "created_at!: DateTime<Utc>", updated_at as "updated_at!: DateTime<Utc>"
+        sqlx::query_as::<_, Tag>(
+            r#"SELECT id,
+                      tag_name,
+                      content,
+                      created_at,
+                      updated_at
                FROM tags
-               WHERE tag_name = $1"#,
-            tag_name
+               WHERE tag_name = ?"#
         )
+        .bind(tag_name)
         .fetch_optional(pool)
         .await
     }

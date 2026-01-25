@@ -160,19 +160,18 @@ impl Project {
     }
 
     pub async fn find_by_name(pool: &SqlitePool, name: &str) -> Result<Option<Self>, sqlx::Error> {
-        sqlx::query_as!(
-            Project,
-            r#"SELECT id as "id!: Uuid",
+        sqlx::query_as::<_, Project>(
+            r#"SELECT id,
                       name,
                       default_agent_working_dir,
-                      remote_project_id as "remote_project_id: Uuid",
-                      created_at as "created_at!: DateTime<Utc>",
-                      updated_at as "updated_at!: DateTime<Utc>"
+                      remote_project_id,
+                      created_at,
+                      updated_at
                FROM projects
-               WHERE name = $1
-               LIMIT 1"#,
-            name
+               WHERE name = ?
+               LIMIT 1"#
         )
+        .bind(name)
         .fetch_optional(pool)
         .await
     }

@@ -266,12 +266,12 @@ impl Repo {
             .map(|n| n.to_string_lossy().to_string())
             .unwrap_or_else(|| "unnamed".to_string());
 
-        sqlx::query!(
-            "UPDATE repos SET path = $1, name = $2, updated_at = datetime('now', 'subsec') WHERE id = $3",
-            path_str,
-            new_name,
-            id
+        sqlx::query(
+            "UPDATE repos SET path = ?, name = ?, updated_at = datetime('now', 'subsec') WHERE id = ?"
         )
+        .bind(path_str)
+        .bind(new_name)
+        .bind(id)
         .execute(pool)
         .await?;
         Ok(())
