@@ -5,6 +5,8 @@ import { cn } from '@/lib/utils';
 import { toPrettyCase } from '@/utils/string';
 import WYSIWYGEditor from '@/components/ui/wysiwyg';
 import type { LocalImageMetadata } from '@/components/ui/wysiwyg/context/task-attempt-context';
+import { useUserSystem } from '@/components/ConfigProvider';
+import type { BaseCodingAgent } from 'shared/types';
 import { Toolbar, ToolbarDropdown } from './Toolbar';
 import {
   DropdownMenuItem,
@@ -45,6 +47,8 @@ interface ChatBoxBaseProps {
   disabled?: boolean;
   workspaceId?: string;
   projectId?: string;
+  repoId?: string;
+  executor?: BaseCodingAgent | null;
   autoFocus?: boolean;
 
   // Variant selection
@@ -98,6 +102,8 @@ export function ChatBoxBase({
   disabled,
   workspaceId,
   projectId,
+  repoId,
+  executor,
   autoFocus,
   variant,
   error,
@@ -114,6 +120,7 @@ export function ChatBoxBase({
   dropzone,
 }: ChatBoxBaseProps) {
   const { t } = useTranslation(['common', 'tasks']);
+  const { config } = useUserSystem();
   const variantLabel = toPrettyCase(variant?.selected || 'DEFAULT');
   const variantOptions = variant?.options ?? [];
 
@@ -179,12 +186,18 @@ export function ChatBoxBase({
           onChange={editor.onChange}
           onCmdEnter={onCmdEnter}
           disabled={disabled}
-          className="min-h-0 max-h-[50vh] overflow-y-auto"
+          // min-h-double ensures space for at least one line of text,
+          // preventing the absolutely-positioned placeholder from overlapping
+          // with the footer when the editor is empty
+          className="min-h-double max-h-[50vh] overflow-y-auto"
           workspaceId={workspaceId}
           projectId={projectId}
+          repoId={repoId}
+          executor={executor ?? null}
           autoFocus={autoFocus}
           onPasteFiles={onPasteFiles}
           localImages={localImages}
+          sendShortcut={config?.send_message_shortcut}
         />
 
         {/* Footer - Controls */}

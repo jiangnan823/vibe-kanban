@@ -29,12 +29,18 @@
     "create": "Crear",
     "delete": "Eliminar",
     "disconnect": "Desconectar",
+    "discard": "Descartar",
     "edit": "Editar",
     "manage": "Gestionar",
     "replay": "Reproducir",
     "reset": "Restablecer",
     "save": "Guardar",
-    "send": "Enviar"
+    "send": "Enviar",
+    "addItem": "Añadir elemento"
+  },
+  "form": {
+    "notSpecified": "No especificado",
+    "selectOption": "Seleccionar una opción..."
   },
   "conversation": {
     "args": "Argumentos",
@@ -305,5 +311,18 @@
     "emptyTooltip": "El uso del contexto aparece después de la próxima respuesta",
     "tooltip": "Contexto: {{percentage}}% · {{used}} / {{total}} tokens",
     "ariaLabel": "Uso del contexto: {{percentage}}%"
+  },
+  "shortcuts": {
+    "title": "Atajos de Teclado",
+    "inWorkspace": "(en espacio de trabajo)",
+    "sequentialHint": "Atajos secuenciales: Presiona la primera tecla, luego la segunda en 500ms.",
+    "configurableHint": "Configurable en Ajustes → General → Entrada de Mensaje"
+  },
+  "typeahead": {
+    "tags": "Etiquetas",
+    "files": "Archivos",
+    "commands": "Comandos",
+    "noTagsOrFiles": "No se encontraron etiquetas ni archivos",
+    "noCommands": "No hay comandos disponibles para este agente."
   }
 }
