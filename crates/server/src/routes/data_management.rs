@@ -566,7 +566,7 @@ pub async fn export_sessions(
     };
 
     if sessions_to_export.is_empty() {
-        return Err(ApiError::BadRequest("No sessions to export"));
+        return Err(ApiError::BadRequest("No sessions to export".to_string()));
     }
 
     // Create ZIP in memory
