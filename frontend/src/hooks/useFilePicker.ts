@@ -38,31 +38,6 @@ export function useFilePicker(): UseFilePickerReturn {
   const isSupported = isFsApiSupported || hasNativeApi;
 
   /**
-   * Pick a single file
-   * Note: pickFile intentionally omits 'pick' from deps to avoid circular dependency
-   */
-  const pickFile = useCallback(
-    async (options: FilePickerOptions = {}): Promise<string | null> => {
-      const { accept = '*', title } = options;
-      return (await pick({ mode: 'file', accept, title })) as string | null;
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    },
-    []
-  );
-
-  /**
-   * Pick a folder
-   * Note: pickFolder intentionally omits 'pick' from deps to avoid circular dependency
-   */
-  const pickFolder = useCallback(
-    async (title?: string): Promise<string | null> => {
-      return (await pick({ mode: 'folder', title })) as string | null;
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    },
-    []
-  );
-
-  /**
    * Universal file/folder picker with fallback support
    */
   const pick = useCallback(
@@ -176,6 +151,27 @@ export function useFilePicker(): UseFilePickerReturn {
       });
     },
     [t, hasNativeApi, isFsApiSupported]
+  );
+
+  /**
+   * Pick a single file
+   */
+  const pickFile = useCallback(
+    async (options: FilePickerOptions = {}): Promise<string | null> => {
+      const { accept = '*', title } = options;
+      return (await pick({ mode: 'file', accept, title })) as string | null;
+    },
+    [pick]
+  );
+
+  /**
+   * Pick a folder
+   */
+  const pickFolder = useCallback(
+    async (title?: string): Promise<string | null> => {
+      return (await pick({ mode: 'folder', title })) as string | null;
+    },
+    [pick]
   );
 
   return {
