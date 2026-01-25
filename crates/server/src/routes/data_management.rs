@@ -447,7 +447,7 @@ pub async fn import_config(
                     let remote_project_id = project_value.get("remote_project_id").and_then(|v| v.as_str());
 
                     // Create minimal project (path will need to be set by user)
-                    sqlx::query!(
+                    sqlx::query(
                         "INSERT INTO projects (id, name, default_agent_working_dir, remote_project_id) VALUES (?, ?, ?, ?)"
                     )
                     .bind(id)
@@ -485,7 +485,7 @@ pub async fn import_config(
                         let id = Uuid::new_v4();
                         let content = tag_value.get("content").and_then(|v| v.as_str());
 
-                        sqlx::query!(
+                        sqlx::query(
                             "INSERT INTO tags (id, tag_name, content) VALUES (?, ?, ?)"
                         )
                         .bind(id)
