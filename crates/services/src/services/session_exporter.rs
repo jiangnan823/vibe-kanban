@@ -126,10 +126,8 @@ impl SessionExporter {
         md.push_str(&format!("- **Created**: {}\n", task.created_at.format("%Y-%m-%d %H:%M:%S")));
         md.push_str(&format!("- **Updated**: {}\n", task.updated_at.format("%Y-%m-%d %H:%M:%S")));
 
-        if let Some(branch) = &workspace.branch {
+        if let Some(Some(branch)) = &workspace.branch {
             md.push_str(&format!("- **Branch**: {}\n", branch));
-        } else {
-            // Branch is optional, handle missing case
         }
 
         if let Some(name) = &workspace.name {
@@ -189,7 +187,8 @@ impl SessionExporter {
 
             // Try to extract task_id from path
             // Expected format: .../projects/{project_id}-{project_name}/tasks/{task_id}-{task_name}/sessions/{timestamp}.md
-            if let Some(task_id) = self.extract_task_id_from_path(&session_dir, &path) {
+            let path_buf = path.to_path_buf();
+            if let Some(task_id) = self.extract_task_id_from_path(&session_dir, &path_buf) {
                 // Check if task exists
                 if db::models::task::Task::find_by_id(&self.db, task_id).await?.is_some() {
                     let session_id = Uuid::new_v4();
