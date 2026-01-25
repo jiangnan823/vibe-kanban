@@ -111,3 +111,8 @@ knowledge-base/
 compile-output.log
 nasm-*.zip
 nasm-temp/
+
+# Large binary files (should not be in repository)
+*.exe
+rustup-init*
+rustup.exe
