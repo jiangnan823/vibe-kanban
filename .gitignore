@@ -101,7 +101,8 @@ SCAN_REPORT.md
 
 # Test scripts and binaries
 test-*.sh
-server-linux-*
+# server-linux-* 保留用于生产环境
+# vibe-kanban.exe - Windows可执行文件（上游预编译版本）
 
 # Knowledge base (local reference only)
 knowledge-base/
