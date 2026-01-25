@@ -34,16 +34,15 @@ pub struct CreateTaskSession {
 impl TaskSession {
     /// Find a task session by ID
     pub async fn find_by_id(pool: &SqlitePool, id: Uuid) -> Result<Option<Self>, sqlx::Error> {
-        sqlx::query_as!(
-            TaskSession,
-            r#"SELECT id AS "id!: Uuid",
-                      task_id AS "task_id!: Uuid",
+        sqlx::query_as::<_, TaskSession>(
+            r#"SELECT id,
+                      task_id,
                       file_path,
-                      created_at AS "created_at!: DateTime<Utc>"
+                      created_at
                FROM task_sessions
-               WHERE id = $1"#,
-            id
+               WHERE id = ?"#
         )
+        .bind(id)
         .fetch_optional(pool)
         .await
     }
@@ -53,17 +52,16 @@ impl TaskSession {
         pool: &SqlitePool,
         task_id: Uuid,
     ) -> Result<Vec<Self>, sqlx::Error> {
-        sqlx::query_as!(
-            TaskSession,
-            r#"SELECT id AS "id!: Uuid",
-                      task_id AS "task_id!: Uuid",
+        sqlx::query_as::<_, TaskSession>(
+            r#"SELECT id,
+                      task_id,
                       file_path,
-                      created_at AS "created_at!: DateTime<Utc>"
+                      created_at
                FROM task_sessions
-               WHERE task_id = $1
-               ORDER BY created_at DESC"#,
-            task_id
+               WHERE task_id = ?
+               ORDER BY created_at DESC"#
         )
+        .bind(task_id)
         .fetch_all(pool)
         .await
     }
@@ -85,28 +83,27 @@ impl TaskSession {
         data: &CreateTaskSession,
         id: Uuid,
     ) -> Result<Self, TaskSessionError> {
-        Ok(sqlx::query_as!(
-            TaskSession,
+        Ok(sqlx::query_as::<_, TaskSession>(
             r#"INSERT INTO task_sessions (id, task_id, file_path)
-               VALUES ($1, $2, $3)
-               RETURNING id AS "id!: Uuid",
-                         task_id AS "task_id!: Uuid",
+               VALUES (?, ?, ?)
+               RETURNING id,
+                         task_id,
                          file_path,
-                         created_at AS "created_at!: DateTime<Utc>""#,
-            id,
-            data.task_id,
-            data.file_path
+                         created_at"#
         )
+        .bind(id)
+        .bind(data.task_id)
+        .bind(&data.file_path)
         .fetch_one(pool)
         .await?)
     }
 
     /// Delete a task session by ID
     pub async fn delete(pool: &SqlitePool, id: Uuid) -> Result<(), sqlx::Error> {
-        sqlx::query!(
-            r#"DELETE FROM task_sessions WHERE id = $1"#,
-            id
+        sqlx::query(
+            r#"DELETE FROM task_sessions WHERE id = ?"#
         )
+        .bind(id)
         .execute(pool)
         .await?;
         Ok(())
@@ -114,10 +111,10 @@ impl TaskSession {
 
     /// Delete all sessions for a task
     pub async fn delete_by_task_id(pool: &SqlitePool, task_id: Uuid) -> Result<u64, sqlx::Error> {
-        let result = sqlx::query!(
-            r#"DELETE FROM task_sessions WHERE task_id = $1"#,
-            task_id
+        let result = sqlx::query(
+            r#"DELETE FROM task_sessions WHERE task_id = ?"#
         )
+        .bind(task_id)
         .execute(pool)
         .await?;
         Ok(result.rows_affected())
@@ -129,26 +126,25 @@ impl TaskSession {
         limit: i64,
         offset: i64,
     ) -> Result<Vec<Self>, sqlx::Error> {
-        sqlx::query_as!(
-            TaskSession,
-            r#"SELECT id AS "id!: Uuid",
-                      task_id AS "task_id!: Uuid",
+        sqlx::query_as::<_, TaskSession>(
+            r#"SELECT id,
+                      task_id,
                       file_path,
-                      created_at AS "created_at!: DateTime<Utc>"
+                      created_at
                FROM task_sessions
                ORDER BY created_at DESC
-               LIMIT $1 OFFSET $2"#,
-            limit,
-            offset
+               LIMIT ? OFFSET ?"#
         )
+        .bind(limit)
+        .bind(offset)
         .fetch_all(pool)
         .await
     }
 
     /// Count total number of task sessions
     pub async fn count(pool: &SqlitePool) -> Result<i64, sqlx::Error> {
-        sqlx::query_scalar!(
-            r#"SELECT COUNT(*) AS "count!: i64" FROM task_sessions"#
+        sqlx::query_scalar::<_, i64>(
+            r#"SELECT COUNT(*) FROM task_sessions"#
         )
         .fetch_one(pool)
         .await
