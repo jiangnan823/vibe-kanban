@@ -375,8 +375,6 @@ pub async fn import_config(
     Query(params): Query<ImportConfigQuery>,
     mut multipart: axum::extract::Multipart,
 ) -> Result<Json<ApiResponse<serde_json::Value>>, ApiError> {
-    use std::io::Read;
-
     // 1. Read uploaded file
     let mut data = Vec::new();
     while let Some(field) = multipart.next_field().await
@@ -568,7 +566,7 @@ pub async fn export_sessions(
     };
 
     if sessions_to_export.is_empty() {
-        return Ok(Json(ApiResponse::error("No sessions to export")).into_response());
+        return Err(ApiError::BadRequest("No sessions to export"));
     }
 
     // Create ZIP in memory
@@ -777,7 +775,7 @@ pub async fn first_run_check(
 
 /// Reload configuration from disk
 pub async fn reload_config(
-    State(deployment): State<DeploymentImpl>,
+    State(_deployment): State<DeploymentImpl>,
 ) -> Result<Json<ApiResponse<ConfigReloadResponse>>, ApiError> {
     let mut reloaded_configs = Vec::new();
 
