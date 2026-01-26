@@ -388,8 +388,9 @@ jobs:
         run: |
           # Remove old rcodesign config if exists
           rm -rf ~/.rcodesign ~/.config/rcodesign ~/Library/Application\ Support/rcodesign
-          # Ensure no config file is loaded
-          export RCODESIGN_CONFIG_FILE=/dev/null
+          # Create an empty config file to prevent loading any existing config
+          mkdir -p ~/.rcodesign
+          echo '# Empty config' > ~/.rcodesign/config.toml
           rcodesign sign --p12-file certificate.p12 --code-signature-flags=runtime \
             target/${{ matrix.target }}/release/server vibe-kanban
 
@@ -404,8 +405,9 @@ jobs:
         run: |
           # Remove old rcodesign config if exists
           rm -rf ~/.rcodesign ~/.config/rcodesign ~/Library/Application\ Support/rcodesign
-          # Ensure no config file is loaded
-          export RCODESIGN_CONFIG_FILE=/dev/null
+          # Create an empty config file to prevent loading any existing config
+          mkdir -p ~/.rcodesign
+          echo '# Empty config' > ~/.rcodesign/config.toml
           rcodesign sign --p12-file certificate.p12 --code-signature-flags=runtime \
             target/${{ matrix.target }}/release/mcp_task_server vibe-kanban-mcp
 
@@ -420,8 +422,9 @@ jobs:
         run: |
           # Remove old rcodesign config if exists
           rm -rf ~/.rcodesign ~/.config/rcodesign ~/Library/Application\ Support/rcodesign
-          # Ensure no config file is loaded
-          export RCODESIGN_CONFIG_FILE=/dev/null
+          # Create an empty config file to prevent loading any existing config
+          mkdir -p ~/.rcodesign
+          echo '# Empty config' > ~/.rcodesign/config.toml
           rcodesign sign --p12-file certificate.p12 --code-signature-flags=runtime \
             target/${{ matrix.target }}/release/review vibe-kanban-review
 
