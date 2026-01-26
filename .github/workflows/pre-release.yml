@@ -375,32 +375,22 @@ jobs:
       - name: Clean rcodesign config (macOS)
         if: runner.os == 'macOS'
         run: |
-          echo "Finding all rcodesign config files..."
-          find ~ -name "*rcodesign*" -type f 2>/dev/null || true
-          find /Users -name "*rcodesign*" -type f 2>/dev/null || true
-          echo "Removing all rcodesign configs..."
+          echo "Finding and removing all rcodesign configs..."
           rm -rf ~/.rcodesign ~/.config/rcodesign ~/Library/Application\ Support/rcodesign
           find ~ -name "config.toml" -path "*/rcodesign/*" -delete 2>/dev/null || true
+          # Also remove any project-level configs
+          find $GITHUB_WORKSPACE -name ".rcodesign.toml" -delete 2>/dev/null || true
+          find $GITHUB_WORKSPACE -name "rcodesign.toml" -delete 2>/dev/null || true
 
       - name: Sign main binary (macOS)
         if: runner.os == 'macOS'
-        env:
-          RCODESIGN_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
         run: |
-          # Create a temporary config directory
-          TEMP_CONFIG=$(mktemp -d)
-          export XDG_CONFIG_HOME="$TEMP_CONFIG"
-
-          # Create an empty but valid TOML config file
-          mkdir -p "$TEMP_CONFIG/rcodesign"
-          touch "$TEMP_CONFIG/rcodesign/config.toml"
-
-          # Sign the binary
-          rcodesign sign --p12-file certificate.p12 --code-signature-flags=runtime \
+          # Use --p12-password instead of environment variable
+          rcodesign sign \
+            --p12-file certificate.p12 \
+            --p12-password "${{ secrets.APPLE_CERTIFICATE_PASSWORD }}" \
+            --code-signature-flags=runtime \
             target/${{ matrix.target }}/release/server vibe-kanban
-
-          # Cleanup
-          rm -rf "$TEMP_CONFIG"
 
       - name: Package main binary (macOS)
         if: runner.os == 'macOS'
@@ -408,23 +398,13 @@ jobs:
 
       - name: Sign MCP binary (macOS)
         if: runner.os == 'macOS'
-        env:
-          RCODESIGN_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
         run: |
-          # Create a temporary config directory
-          TEMP_CONFIG=$(mktemp -d)
-          export XDG_CONFIG_HOME="$TEMP_CONFIG"
-
-          # Create an empty but valid TOML config file
-          mkdir -p "$TEMP_CONFIG/rcodesign"
-          touch "$TEMP_CONFIG/rcodesign/config.toml"
-
-          # Sign the binary
-          rcodesign sign --p12-file certificate.p12 --code-signature-flags=runtime \
+          # Use --p12-password instead of environment variable
+          rcodesign sign \
+            --p12-file certificate.p12 \
+            --p12-password "${{ secrets.APPLE_CERTIFICATE_PASSWORD }}" \
+            --code-signature-flags=runtime \
             target/${{ matrix.target }}/release/mcp_task_server vibe-kanban-mcp
-
-          # Cleanup
-          rm -rf "$TEMP_CONFIG"
 
       - name: Package MCP binary (macOS)
         if: runner.os == 'macOS'
@@ -432,23 +412,13 @@ jobs:
 
       - name: Sign Review binary (macOS)
         if: runner.os == 'macOS'
-        env:
-          RCODESIGN_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
         run: |
-          # Create a temporary config directory
-          TEMP_CONFIG=$(mktemp -d)
-          export XDG_CONFIG_HOME="$TEMP_CONFIG"
-
-          # Create an empty but valid TOML config file
-          mkdir -p "$TEMP_CONFIG/rcodesign"
-          touch "$TEMP_CONFIG/rcodesign/config.toml"
-
-          # Sign the binary
-          rcodesign sign --p12-file certificate.p12 --code-signature-flags=runtime \
+          # Use --p12-password instead of environment variable
+          rcodesign sign \
+            --p12-file certificate.p12 \
+            --p12-password "${{ secrets.APPLE_CERTIFICATE_PASSWORD }}" \
+            --code-signature-flags=runtime \
             target/${{ matrix.target }}/release/review vibe-kanban-review
-
-          # Cleanup
-          rm -rf "$TEMP_CONFIG"
 
       - name: Package Review binary (macOS)
         if: runner.os == 'macOS'
