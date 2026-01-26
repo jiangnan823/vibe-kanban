@@ -377,13 +377,18 @@ jobs:
         env:
           RCODESIGN_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
         run: |
-          # Remove old rcodesign config if exists
-          rm -rf ~/.rcodesign ~/.config/rcodesign ~/Library/Application\ Support/rcodesign
-          # Create an empty config file to prevent loading any existing config
-          mkdir -p ~/.rcodesign
-          echo '# Empty config' > ~/.rcodesign/config.toml
+          # Create a temporary home directory to isolate rcodesign
+          TEMP_HOME=$(mktemp -d)
+          export HOME="$TEMP_HOME"
+          export XDG_CONFIG_HOME="$TEMP_HOME/.config"
+          export XDG_HOME_CONFIG="$TEMP_HOME/.config"
+
+          # Sign the binary
           rcodesign sign --p12-file certificate.p12 --code-signature-flags=runtime \
             target/${{ matrix.target }}/release/server vibe-kanban
+
+          # Cleanup
+          rm -rf "$TEMP_HOME"
 
       - name: Package main binary (macOS)
         if: runner.os == 'macOS'
@@ -394,13 +399,18 @@ jobs:
         env:
           RCODESIGN_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
         run: |
-          # Remove old rcodesign config if exists
-          rm -rf ~/.rcodesign ~/.config/rcodesign ~/Library/Application\ Support/rcodesign
-          # Create an empty config file to prevent loading any existing config
-          mkdir -p ~/.rcodesign
-          echo '# Empty config' > ~/.rcodesign/config.toml
+          # Create a temporary home directory to isolate rcodesign
+          TEMP_HOME=$(mktemp -d)
+          export HOME="$TEMP_HOME"
+          export XDG_CONFIG_HOME="$TEMP_HOME/.config"
+          export XDG_HOME_CONFIG="$TEMP_HOME/.config"
+
+          # Sign the binary
           rcodesign sign --p12-file certificate.p12 --code-signature-flags=runtime \
             target/${{ matrix.target }}/release/mcp_task_server vibe-kanban-mcp
+
+          # Cleanup
+          rm -rf "$TEMP_HOME"
 
       - name: Package MCP binary (macOS)
         if: runner.os == 'macOS'
@@ -411,13 +421,18 @@ jobs:
         env:
           RCODESIGN_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
         run: |
-          # Remove old rcodesign config if exists
-          rm -rf ~/.rcodesign ~/.config/rcodesign ~/Library/Application\ Support/rcodesign
-          # Create an empty config file to prevent loading any existing config
-          mkdir -p ~/.rcodesign
-          echo '# Empty config' > ~/.rcodesign/config.toml
+          # Create a temporary home directory to isolate rcodesign
+          TEMP_HOME=$(mktemp -d)
+          export HOME="$TEMP_HOME"
+          export XDG_CONFIG_HOME="$TEMP_HOME/.config"
+          export XDG_HOME_CONFIG="$TEMP_HOME/.config"
+
+          # Sign the binary
           rcodesign sign --p12-file certificate.p12 --code-signature-flags=runtime \
             target/${{ matrix.target }}/release/review vibe-kanban-review
+
+          # Cleanup
+          rm -rf "$TEMP_HOME"
 
       - name: Package Review binary (macOS)
         if: runner.os == 'macOS'
