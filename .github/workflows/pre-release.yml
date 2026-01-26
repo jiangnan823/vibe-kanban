@@ -31,7 +31,7 @@ env:
 
 jobs:
   bump-version:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-m
     outputs:
       new_tag: ${{ steps.version.outputs.new_tag }}
       new_version: ${{ steps.version.outputs.new_version }}
@@ -120,7 +120,7 @@ jobs:
 
   build-frontend:
     needs: bump-version
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-x64-l
     env:
       VITE_PUBLIC_REACT_VIRTUOSO_LICENSE_KEY: ${{ secrets.PUBLIC_REACT_VIRTUOSO_LICENSE_KEY }}
       VITE_VK_SHARED_API_BASE: ${{ secrets.VK_SHARED_API_BASE }}
@@ -149,7 +149,6 @@ jobs:
           VITE_POSTHOG_API_ENDPOINT: ${{ secrets.POSTHOG_API_ENDPOINT }}
 
       - name: Create Sentry release
-        continue-on-error: true
         uses: getsentry/action-release@v3
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -176,13 +175,13 @@ jobs:
       matrix:
         include:
           - target: x86_64-unknown-linux-musl
-            os: ubuntu-latest
+            os: ubuntu-latest-x64-l
             name: linux-x64
           - target: x86_64-pc-windows-msvc
-            os: ubuntu-latest
+            os: ubuntu-latest-x64-l
             name: windows-x64
           - target: aarch64-apple-darwin
-            os: macos-latest
+            os: macos-15-xlarge
             name: macos-arm64
     env:
       CARGO_INCREMENTAL: "0"
@@ -284,7 +283,6 @@ jobs:
         run: |
           cargo zigbuild --release --target ${{ matrix.target }} -p server -p review --bin server --bin mcp_task_server --bin review
         env:
-          SQLX_OFFLINE: true
           POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
           POSTHOG_API_ENDPOINT: ${{ secrets.POSTHOG_API_ENDPOINT }}
           VK_SHARED_API_BASE: ${{ secrets.VK_SHARED_API_BASE }}
@@ -299,7 +297,6 @@ jobs:
           fi
           cargo build --release --target ${{ matrix.target }} -p server -p review --bin server --bin mcp_task_server --bin review
         env:
-          SQLX_OFFLINE: true
           POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
           POSTHOG_API_ENDPOINT: ${{ secrets.POSTHOG_API_ENDPOINT }}
           VK_SHARED_API_BASE: ${{ secrets.VK_SHARED_API_BASE }}
@@ -317,7 +314,6 @@ jobs:
           fi
           cargo xwin build --cross-compiler clang-cl --release --target ${{ matrix.target }} -p server -p review --bin server --bin mcp_task_server --bin review
         env:
-          SQLX_OFFLINE: true
           POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
           POSTHOG_API_ENDPOINT: ${{ secrets.POSTHOG_API_ENDPOINT }}
           VK_SHARED_API_BASE: ${{ secrets.VK_SHARED_API_BASE }}
@@ -326,7 +322,6 @@ jobs:
           CARGO_PROFILE_RELEASE_DEBUG: 0
 
       - name: Setup Sentry CLI
-        continue-on-error: true
         uses: matbour/setup-sentry-cli@v2
         with:
           token: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -335,7 +330,6 @@ jobs:
           version: 2.21.2
 
       - name: Upload source maps to Sentry
-        continue-on-error: true
         run: sentry-cli debug-files upload --include-sources target/${{ matrix.target }}/release
 
       - name: Prepare binaries (non-macOS)
@@ -365,32 +359,16 @@ jobs:
           API_KEY: ${{ secrets.APP_STORE_API_KEY }}
         run: echo $API_KEY > app_store_key.json
 
-      - name: Install rcodesign (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          curl -L https://github.com/indygreg/apple-platform-rs/releases/download/apple-codesign%2F0.28.0/apple-codesign-0.28.0-macos-universal.tar.gz -o apple-codesign.tar.gz
-          tar xzf apple-codesign.tar.gz
-          echo "$PWD/apple-codesign-0.28.0-macos-universal" >> $GITHUB_PATH
-
-      - name: Clean rcodesign config (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          echo "Finding and removing all rcodesign configs..."
-          rm -rf ~/.rcodesign ~/.config/rcodesign ~/Library/Application\ Support/rcodesign
-          find ~ -name "config.toml" -path "*/rcodesign/*" -delete 2>/dev/null || true
-          # Also remove any project-level configs
-          find $GITHUB_WORKSPACE -name ".rcodesign.toml" -delete 2>/dev/null || true
-          find $GITHUB_WORKSPACE -name "rcodesign.toml" -delete 2>/dev/null || true
-
       - name: Sign main binary (macOS)
         if: runner.os == 'macOS'
-        run: |
-          # Use --p12-password instead of environment variable
-          rcodesign sign \
-            --p12-file certificate.p12 \
-            --p12-password "${{ secrets.APPLE_CERTIFICATE_PASSWORD }}" \
-            --code-signature-flags=runtime \
-            target/${{ matrix.target }}/release/server vibe-kanban
+        uses: BloopAI/apple-code-sign-action@v1
+        with:
+          input_path: target/${{ matrix.target }}/release/server
+          output_path: vibe-kanban
+          p12_file: certificate.p12
+          p12_password: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          sign: true
+          sign_args: "--code-signature-flags=runtime"
 
       - name: Package main binary (macOS)
         if: runner.os == 'macOS'
@@ -398,13 +376,14 @@ jobs:
 
       - name: Sign MCP binary (macOS)
         if: runner.os == 'macOS'
-        run: |
-          # Use --p12-password instead of environment variable
-          rcodesign sign \
-            --p12-file certificate.p12 \
-            --p12-password "${{ secrets.APPLE_CERTIFICATE_PASSWORD }}" \
-            --code-signature-flags=runtime \
-            target/${{ matrix.target }}/release/mcp_task_server vibe-kanban-mcp
+        uses: BloopAI/apple-code-sign-action@v1
+        with:
+          input_path: target/${{ matrix.target }}/release/mcp_task_server
+          output_path: vibe-kanban-mcp
+          p12_file: certificate.p12
+          p12_password: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          sign: true
+          sign_args: "--code-signature-flags=runtime"
 
       - name: Package MCP binary (macOS)
         if: runner.os == 'macOS'
@@ -412,13 +391,14 @@ jobs:
 
       - name: Sign Review binary (macOS)
         if: runner.os == 'macOS'
-        run: |
-          # Use --p12-password instead of environment variable
-          rcodesign sign \
-            --p12-file certificate.p12 \
-            --p12-password "${{ secrets.APPLE_CERTIFICATE_PASSWORD }}" \
-            --code-signature-flags=runtime \
-            target/${{ matrix.target }}/release/review vibe-kanban-review
+        uses: BloopAI/apple-code-sign-action@v1
+        with:
+          input_path: target/${{ matrix.target }}/release/review
+          output_path: vibe-kanban-review
+          p12_file: certificate.p12
+          p12_password: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          sign: true
+          sign_args: "--code-signature-flags=runtime"
 
       - name: Package Review binary (macOS)
         if: runner.os == 'macOS'
@@ -467,7 +447,7 @@ jobs:
 
   package-npx-cli:
     needs: [bump-version, build-frontend, build-backend]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-m
     strategy:
       # NOTE: This matrix must be kept in sync with build-backend job above
       # GitHub Actions doesn't support YAML anchors, so duplication is unavoidable
@@ -511,7 +491,7 @@ jobs:
           find dist/
 
       - name: Create platform package
-        if: matrix.name != 'macos-arm64' && matrix.name != 'macos-x64'
+        if: matrix.name != 'macos-arm64'
         run: |
           mkdir -p npx-cli/dist/${{ matrix.name }}
           mkdir vibe-kanban-${{ matrix.name }}
@@ -527,7 +507,7 @@ jobs:
           zip -j npx-cli/dist/${{ matrix.name }}/vibe-kanban-review.zip vibe-kanban-review-${{ matrix.name }}/${{ matrix.review_binary }}
 
       - name: Create platform package (macOS)
-        if: matrix.name == 'macos-arm64' || matrix.name == 'macos-x64'
+        if: matrix.name == 'macos-arm64'
         run: |
           mkdir -p npx-cli/dist/${{ matrix.name }}
           mkdir vibe-kanban-${{ matrix.name }}
@@ -544,7 +524,7 @@ jobs:
 
   upload-to-r2:
     needs: [bump-version, package-npx-cli]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-m
     steps:
       - uses: actions/checkout@v4
         with:
@@ -638,7 +618,7 @@ jobs:
 
   create-prerelease:
     needs: [bump-version, build-frontend, upload-to-r2]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-m
     steps:
       - uses: actions/checkout@v4
         with:
