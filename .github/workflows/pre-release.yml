@@ -359,18 +359,25 @@ jobs:
           API_KEY: ${{ secrets.APP_STORE_API_KEY }}
         run: echo $API_KEY > app_store_key.json
 
+      - name: Download rcodesign
+        if: runner.os == 'macOS'
+        run: |
+          mkdir -p rcodesign
+          curl -L -o rcodesign.tar.gz "https://github.com/indygreg/apple-platform-rs/releases/download/apple-codesign%2F0.28.0/apple-codesign-0.28.0-macos-universal.tar.gz"
+          tar -xzf rcodesign.tar.gz -C rcodesign
+          chmod +x rcodesign/apple-codesign-*/rcodesign
+
       - name: Sign main binary (macOS)
         if: runner.os == 'macOS'
-        uses: BloopAI/apple-code-sign-action@main
+        run: |
+          rcodesign/apple-codesign-0.28.0-macos-universal/rcodesign sign \
+            --p12-file certificate.p12 \
+            --p12-password "${{ secrets.APPLE_CERTIFICATE_PASSWORD }}" \
+            --code-signature-flags=runtime \
+            target/${{ matrix.target }}/release/server \
+            vibe-kanban
         env:
           TERM: xterm
-        with:
-          input_path: target/${{ matrix.target }}/release/server
-          output_path: vibe-kanban
-          p12_file: certificate.p12
-          p12_password: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-          sign: true
-          sign_args: "--code-signature-flags=runtime"
 
       - name: Package main binary (macOS)
         if: runner.os == 'macOS'
@@ -378,16 +385,15 @@ jobs:
 
       - name: Sign MCP binary (macOS)
         if: runner.os == 'macOS'
-        uses: BloopAI/apple-code-sign-action@main
+        run: |
+          rcodesign/apple-codesign-0.28.0-macos-universal/rcodesign sign \
+            --p12-file certificate.p12 \
+            --p12-password "${{ secrets.APPLE_CERTIFICATE_PASSWORD }}" \
+            --code-signature-flags=runtime \
+            target/${{ matrix.target }}/release/mcp_task_server \
+            vibe-kanban-mcp
         env:
           TERM: xterm
-        with:
-          input_path: target/${{ matrix.target }}/release/mcp_task_server
-          output_path: vibe-kanban-mcp
-          p12_file: certificate.p12
-          p12_password: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-          sign: true
-          sign_args: "--code-signature-flags=runtime"
 
       - name: Package MCP binary (macOS)
         if: runner.os == 'macOS'
@@ -395,16 +401,15 @@ jobs:
 
       - name: Sign Review binary (macOS)
         if: runner.os == 'macOS'
-        uses: BloopAI/apple-code-sign-action@main
+        run: |
+          rcodesign/apple-codesign-0.28.0-macos-universal/rcodesign sign \
+            --p12-file certificate.p12 \
+            --p12-password "${{ secrets.APPLE_CERTIFICATE_PASSWORD }}" \
+            --code-signature-flags=runtime \
+            target/${{ matrix.target }}/release/review \
+            vibe-kanban-review
         env:
           TERM: xterm
-        with:
-          input_path: target/${{ matrix.target }}/release/review
-          output_path: vibe-kanban-review
-          p12_file: certificate.p12
-          p12_password: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-          sign: true
-          sign_args: "--code-signature-flags=runtime"
 
       - name: Package Review binary (macOS)
         if: runner.os == 'macOS'
