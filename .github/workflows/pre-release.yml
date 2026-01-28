@@ -352,6 +352,9 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           echo "${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}" | base64 --decode > certificate.p12
+          # Verify the P12 file is valid
+          file certificate.p12
+          ls -la certificate.p12
 
       - name: Write API Key to file
         if: runner.os == 'macOS'
@@ -367,15 +370,49 @@ jobs:
           tar -xzf rcodesign.tar.gz -C rcodesign
           chmod +x rcodesign/apple-codesign-*/rcodesign
 
+      - name: Test certificate password (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          echo "Testing certificate..."
+          if [ -z "${{ secrets.APPLE_CERTIFICATE_PASSWORD }}" ]; then
+            echo "WARNING: APPLE_CERTIFICATE_PASSWORD is empty or not set"
+            echo "Trying without password..."
+            rcodesign/apple-codesign-0.28.0-macos-universal/rcodesign sign \
+              --p12-file certificate.p12 \
+              --code-signature-flags=runtime \
+              target/${{ matrix.target }}/release/server \
+              vibe-kanban-test
+          else
+            echo "Password is set (length: ${#APPLE_CERTIFICATE_PASSWORD})"
+            rcodesign/apple-codesign-0.28.0-macos-universal/rcodesign sign \
+              --p12-file certificate.p12 \
+              --p12-password "${{ secrets.APPLE_CERTIFICATE_PASSWORD }}" \
+              --code-signature-flags=runtime \
+              target/${{ matrix.target }}/release/server \
+              vibe-kanban-test
+          fi
+        env:
+          TERM: xterm
+
       - name: Sign main binary (macOS)
         if: runner.os == 'macOS'
         run: |
-          rcodesign/apple-codesign-0.28.0-macos-universal/rcodesign sign \
-            --p12-file certificate.p12 \
-            --p12-password "${{ secrets.APPLE_CERTIFICATE_PASSWORD }}" \
-            --code-signature-flags=runtime \
-            target/${{ matrix.target }}/release/server \
-            vibe-kanban
+          if [ -z "${{ secrets.APPLE_CERTIFICATE_PASSWORD }}" ]; then
+            echo "Signing without password..."
+            rcodesign/apple-codesign-0.28.0-macos-universal/rcodesign sign \
+              --p12-file certificate.p12 \
+              --code-signature-flags=runtime \
+              target/${{ matrix.target }}/release/server \
+              vibe-kanban
+          else
+            echo "Signing with password..."
+            rcodesign/apple-codesign-0.28.0-macos-universal/rcodesign sign \
+              --p12-file certificate.p12 \
+              --p12-password "${{ secrets.APPLE_CERTIFICATE_PASSWORD }}" \
+              --code-signature-flags=runtime \
+              target/${{ matrix.target }}/release/server \
+              vibe-kanban
+          fi
         env:
           TERM: xterm
 
@@ -386,12 +423,22 @@ jobs:
       - name: Sign MCP binary (macOS)
         if: runner.os == 'macOS'
         run: |
-          rcodesign/apple-codesign-0.28.0-macos-universal/rcodesign sign \
-            --p12-file certificate.p12 \
-            --p12-password "${{ secrets.APPLE_CERTIFICATE_PASSWORD }}" \
-            --code-signature-flags=runtime \
-            target/${{ matrix.target }}/release/mcp_task_server \
-            vibe-kanban-mcp
+          if [ -z "${{ secrets.APPLE_CERTIFICATE_PASSWORD }}" ]; then
+            echo "Signing without password..."
+            rcodesign/apple-codesign-0.28.0-macos-universal/rcodesign sign \
+              --p12-file certificate.p12 \
+              --code-signature-flags=runtime \
+              target/${{ matrix.target }}/release/mcp_task_server \
+              vibe-kanban-mcp
+          else
+            echo "Signing with password..."
+            rcodesign/apple-codesign-0.28.0-macos-universal/rcodesign sign \
+              --p12-file certificate.p12 \
+              --p12-password "${{ secrets.APPLE_CERTIFICATE_PASSWORD }}" \
+              --code-signature-flags=runtime \
+              target/${{ matrix.target }}/release/mcp_task_server \
+              vibe-kanban-mcp
+          fi
         env:
           TERM: xterm
 
@@ -402,12 +449,22 @@ jobs:
       - name: Sign Review binary (macOS)
         if: runner.os == 'macOS'
         run: |
-          rcodesign/apple-codesign-0.28.0-macos-universal/rcodesign sign \
-            --p12-file certificate.p12 \
-            --p12-password "${{ secrets.APPLE_CERTIFICATE_PASSWORD }}" \
-            --code-signature-flags=runtime \
-            target/${{ matrix.target }}/release/review \
-            vibe-kanban-review
+          if [ -z "${{ secrets.APPLE_CERTIFICATE_PASSWORD }}" ]; then
+            echo "Signing without password..."
+            rcodesign/apple-codesign-0.28.0-macos-universal/rcodesign sign \
+              --p12-file certificate.p12 \
+              --code-signature-flags=runtime \
+              target/${{ matrix.target }}/release/review \
+              vibe-kanban-review
+          else
+            echo "Signing with password..."
+            rcodesign/apple-codesign-0.28.0-macos-universal/rcodesign sign \
+              --p12-file certificate.p12 \
+              --p12-password "${{ secrets.APPLE_CERTIFICATE_PASSWORD }}" \
+              --code-signature-flags=runtime \
+              target/${{ matrix.target }}/release/review \
+              vibe-kanban-review
+          fi
         env:
           TERM: xterm
 
