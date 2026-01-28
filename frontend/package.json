@@ -1,7 +1,7 @@
 {
   "name": "vibe-kanban",
   "private": true,
-  "version": "0.0.162-main.24",
+  "version": "0.0.162-main.25",
   "type": "module",
   "scripts": {
     "dev": "vite",
