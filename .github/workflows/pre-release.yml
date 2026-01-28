@@ -175,9 +175,6 @@ jobs:
       # Platform matrix - keep target/name in sync with package-npx-cli job
       matrix:
         include:
-          - target: x86_64-unknown-linux-musl
-            os: ubuntu-latest
-            name: linux-x64
           - target: x86_64-pc-windows-msvc
             os: ubuntu-latest
             name: windows-x64
@@ -456,11 +453,6 @@ jobs:
       # GitHub Actions doesn't support YAML anchors, so duplication is unavoidable
       matrix:
         include:
-          - target: x86_64-unknown-linux-musl
-            name: linux-x64
-            binary: vibe-kanban
-            mcp_binary: vibe-kanban-mcp
-            review_binary: vibe-kanban-review
           - target: x86_64-pc-windows-msvc
             name: windows-x64
             binary: vibe-kanban.exe
@@ -562,7 +554,7 @@ jobs:
             const fs = require('fs');
             const crypto = require('crypto');
             const manifest = { version: '$TAG', platforms: {} };
-            const platforms = ['linux-x64', 'windows-x64', 'macos-arm64'];
+            const platforms = ['windows-x64', 'macos-arm64'];
             const binaries = ['vibe-kanban', 'vibe-kanban-mcp', 'vibe-kanban-review'];
 
             for (const platform of platforms) {
@@ -584,7 +576,7 @@ jobs:
           "
 
           # Upload binaries (use full tag for path, allows multiple pre-releases to coexist)
-          for platform in linux-x64 windows-x64 macos-arm64; do
+          for platform in windows-x64 macos-arm64; do
             for binary in vibe-kanban vibe-kanban-mcp vibe-kanban-review; do
               if [ -f "binaries/$platform/$binary.zip" ]; then
                 echo "Uploading binaries/$platform/$binary.zip..."
