@@ -348,8 +348,26 @@ jobs:
           fi
 
       # Code signing for macOS only
-      - name: Prepare Apple certificate (macOS)
+      - name: Check for certificate (macOS)
         if: runner.os == 'macOS'
+        run: |
+          if [ -z "${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}" ]; then
+            echo "⚠️  No Apple certificate found in secrets"
+            echo "SKIP_SIGNING=true" >> $GITHUB_ENV
+            echo "Binary will be packaged without code signing"
+            echo ""
+            echo "Note: This is normal for fork projects without Apple Developer accounts."
+            echo "The binary will still work, but macOS users will need to:"
+            echo "  1. Right-click > Open (or hold Option + double-click)"
+            echo "  2. Click 'Open' to confirm"
+          else
+            echo "✓ Apple certificate found"
+            echo "SKIP_SIGNING=false" >> $GITHUB_ENV
+            echo "Proceeding with code signing..."
+          fi
+
+      - name: Prepare Apple certificate (macOS)
+        if: runner.os == 'macOS' && env.SKIP_SIGNING != 'true'
         run: |
           echo "${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}" | base64 --decode > certificate.p12
           # Verify the P12 file is valid
@@ -363,7 +381,7 @@ jobs:
         run: echo $API_KEY > app_store_key.json
 
       - name: Download rcodesign
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS' && env.SKIP_SIGNING != 'true'
         run: |
           mkdir -p rcodesign
           curl -L -o rcodesign.tar.gz "https://github.com/indygreg/apple-platform-rs/releases/download/apple-codesign%2F0.28.0/apple-codesign-0.28.0-macos-universal.tar.gz"
@@ -371,7 +389,7 @@ jobs:
           chmod +x rcodesign/apple-codesign-*/rcodesign
 
       - name: Test certificate password (macOS)
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS' && env.SKIP_SIGNING != 'true'
         run: |
           echo "Testing certificate..."
           if [ -z "${{ secrets.APPLE_CERTIFICATE_PASSWORD }}" ]; then
@@ -395,7 +413,7 @@ jobs:
           TERM: xterm
 
       - name: Sign main binary (macOS)
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS' && env.SKIP_SIGNING != 'true'
         run: |
           if [ -z "${{ secrets.APPLE_CERTIFICATE_PASSWORD }}" ]; then
             echo "Signing without password..."
@@ -416,12 +434,35 @@ jobs:
         env:
           TERM: xterm
 
+      - name: Package unsigned binaries (macOS)
+        if: runner.os == 'macOS' && env.SKIP_SIGNING == 'true'
+        run: |
+          echo "=== Packaging unsigned binaries ==="
+          echo ""
+          echo "Copying unsigned binaries..."
+          cp target/${{ matrix.target }}/release/server vibe-kanban
+          cp target/${{ matrix.target }}/release/mcp_task_server vibe-kanban-mcp
+          cp target/${{ matrix.target }}/release/review vibe-kanban-review
+
+          echo "Creating zip files..."
+          zip vibe-kanban.zip vibe-kanban
+          zip vibe-kanban-mcp.zip vibe-kanban-mcp
+          zip vibe-kanban-review.zip vibe-kanban-review
+
+          echo ""
+          echo "⚠️  WARNING: Binaries are not code-signed"
+          echo "macOS users will need to:"
+          echo "  1. Right-click > Open (or hold Option + double-click)"
+          echo "  2. Click 'Open' to confirm"
+          echo ""
+          echo "Note: This is normal for fork projects without Apple Developer accounts."
+
       - name: Package main binary (macOS)
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS' && env.SKIP_SIGNING != 'true'
         run: zip vibe-kanban.zip vibe-kanban
 
       - name: Sign MCP binary (macOS)
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS' && env.SKIP_SIGNING != 'true'
         run: |
           if [ -z "${{ secrets.APPLE_CERTIFICATE_PASSWORD }}" ]; then
             echo "Signing without password..."
@@ -443,11 +484,11 @@ jobs:
           TERM: xterm
 
       - name: Package MCP binary (macOS)
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS' && env.SKIP_SIGNING != 'true'
         run: zip vibe-kanban-mcp.zip vibe-kanban-mcp
 
       - name: Sign Review binary (macOS)
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS' && env.SKIP_SIGNING != 'true'
         run: |
           if [ -z "${{ secrets.APPLE_CERTIFICATE_PASSWORD }}" ]; then
             echo "Signing without password..."
@@ -469,11 +510,11 @@ jobs:
           TERM: xterm
 
       - name: Package Review binary (macOS)
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS' && env.SKIP_SIGNING != 'true'
         run: zip vibe-kanban-review.zip vibe-kanban-review
 
       - name: Notarize signed binaries (macOS)
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS' && env.SKIP_SIGNING != 'true'
         uses: BloopAI/apple-code-sign-action@main
         continue-on-error: true
         with:
@@ -494,7 +535,7 @@ jobs:
           cp vibe-kanban-review.zip dist/vibe-kanban-review-${{ matrix.name }}.zip
 
       - name: Clean up certificates (macOS)
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS' && env.SKIP_SIGNING != 'true'
         run: |
           rm -f certificate.p12
           rm -rf private_keys/
