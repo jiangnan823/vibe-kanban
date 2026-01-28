@@ -629,6 +629,8 @@ jobs:
   upload-to-r2:
     needs: [bump-version, package-npx-cli]
     runs-on: ubuntu-latest
+    # Skip if R2 secrets are not configured (normal for fork projects)
+    if: ${{ secrets.R2_BINARIES_ACCESS_KEY_ID != '' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -721,7 +723,7 @@ jobs:
             --recursive
 
   create-prerelease:
-    needs: [bump-version, build-frontend, upload-to-r2]
+    needs: [bump-version, build-frontend, package-npx-cli]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
