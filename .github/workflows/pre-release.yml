@@ -362,6 +362,8 @@ jobs:
       - name: Sign main binary (macOS)
         if: runner.os == 'macOS'
         uses: BloopAI/apple-code-sign-action@main
+        env:
+          TERM: xterm
         with:
           input_path: target/${{ matrix.target }}/release/server
           output_path: vibe-kanban
@@ -377,6 +379,8 @@ jobs:
       - name: Sign MCP binary (macOS)
         if: runner.os == 'macOS'
         uses: BloopAI/apple-code-sign-action@main
+        env:
+          TERM: xterm
         with:
           input_path: target/${{ matrix.target }}/release/mcp_task_server
           output_path: vibe-kanban-mcp
@@ -392,6 +396,8 @@ jobs:
       - name: Sign Review binary (macOS)
         if: runner.os == 'macOS'
         uses: BloopAI/apple-code-sign-action@main
+        env:
+          TERM: xterm
         with:
           input_path: target/${{ matrix.target }}/release/review
           output_path: vibe-kanban-review
